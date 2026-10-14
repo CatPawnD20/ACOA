@@ -50,18 +50,25 @@ jobs:
           python -m pip --isolated install --index-url https://pypi.org/simple -r "$RUNNER_TEMP/acoa-editable-requirements.txt"
       - name: Install package and development tools
         run: python -m pip --isolated install --index-url https://pypi.org/simple --no-binary=mypy -e ".[dev]"
-      - name: Check dependency consistency
+      - name: Install migration tooling
+        run: python -m pip --isolated install --index-url https://pypi.org/simple -r deployment/migration-requirements.txt
+      - name: Check installed dependency consistency
         run: python -m pip --isolated check
       - name: Run existing unit and import checks
         run: python -m pytest -q
       - name: Lint
         run: python -m ruff check .
       - name: Check formatting
-        run: python -m ruff format --check src tests deployment/prepare_local.py
+        run: python -m ruff format --check src tests deployment/prepare_local.py deployment/migrate.py deployment/migrations/env.py
       - name: Check types
         run: |
           python -m mypy
-          python -m mypy deployment/prepare_local.py
+          python -m mypy deployment/prepare_local.py deployment/migrate.py deployment/migrations/env.py
+      - name: Check migration graph and offline SQL without database credentials
+        run: |
+          python deployment/migrate.py heads
+          python deployment/migrate.py history
+          python deployment/migrate.py upgrade --sql
       - name: Audit installed build and development dependencies
         if: runner.os == 'Linux'
         run: |

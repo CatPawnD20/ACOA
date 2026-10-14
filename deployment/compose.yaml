@@ -27,6 +27,36 @@ services:
       start_period: 20s
     shm_size: 128mb
 
+  acoa-migrate:
+    profiles: [maintenance]
+    build:
+      context: .
+      dockerfile: migration.Dockerfile
+    entrypoint:
+      - python
+      - migrate.py
+      - --host
+      - acoa-postgres
+      - --port
+      - "5432"
+      - --password-file
+      - /run/secrets/postgres_migration_password
+    command: [current]
+    depends_on:
+      acoa-postgres:
+        condition: service_healthy
+    secrets:
+      - postgres_migration_password
+    networks:
+      - database
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    cpus: 1
+
 networks:
   database:
     internal: true

@@ -6,7 +6,7 @@
 
 The approved architecture is a modular monolith in one Python repository (ADR-001). A dedicated PostgreSQL service is configured under ADR-002/011/013. Later tasks add durable task execution (ADR-003), central ModelGateway/ModelRouter (ADR-015), and Policy Gate/External Action Executor (ADR-006/007). Browser access is layered and isolated; email providers use a shared contract; artifacts are versioned; deployment remains portable between local and cloud environments.
 
-The Python package does not start those services. Importing `acoa` or `acoa.config` reads no configuration and starts no network request, database connection, browser, model call, subprocess, or background job. PostgreSQL is started explicitly through Compose; application database adapters and migrations remain later work. Replies and follow-up emails remain user-sent under P-01/P-02.
+The Python package does not start those services. Importing `acoa` or `acoa.config` reads no configuration and starts no network request, database connection, browser, model call, subprocess, or background job. PostgreSQL and the migration runner are started explicitly; application database adapters and business revisions remain later work. Replies and follow-up emails remain user-sent under P-01/P-02.
 
 ## Local development
 
@@ -46,11 +46,16 @@ Smoke tests use a fresh child process outside the source working directory, with
 ## Continuous integration
 
 [The CI workflow](.github/workflows/ci.yml) runs existing tests, Ruff, strict mypy
-(including the local password-preparation script), and dependency consistency on
+(including deployment scripts), and dependency consistency on
 Python 3.12.14 for Ubuntu 24.04 and Windows 2022. The Linux job additionally audits
 all installed quality-environment packages, including the build backend, for known
 vulnerabilities. A separate job scans complete checked-out Git history with
 Gitleaks, using redacted output and a checksum-verified binary.
+
+Migration tools are explicitly installed from `deployment/migration-requirements.txt`
+and included in that audit. CI exercises the revision graph and offline SQL
+without database credentials; live development-DB verification is recorded in the
+migration task results.
 
 External actions are pinned by commit SHA; repository access is read-only and
 checkout credentials are not persisted. No application credentials, database
@@ -105,7 +110,7 @@ The source documents were preserved, except for **approval status metadata synch
 1. Keep the five canonical specifications and AGENTS rules available in the repository. Approved document bytes are preserved by `.gitattributes`; code uses LF line endings.
 2. Work through focused tasks, using small functions, requirements-linked verification, and a final diff review. The user approved [the EP-00.01 plan](tasks/EP-00.01-implementation-plan.md) and local Git preparation on 2026-10-14.
 3. Local Git uses the `main` branch. No remote GitHub repository or push is included. When explicitly requested, create a private remote repository and review focused PRs before merging.
-4. EP-00.02 implements configuration validation with safe defaults and blocked readiness when required declarations/budgets are missing. EP-00.03 provides a dedicated PostgreSQL container/volume, private network, and separate admin/migration/application roles. Follow [the deployment guide](deployment/README.md) for explicit startup. EP-00.04 provides CI checks. Before closing G0, a focused bootstrap follow-up must add the migration runner; business schema migrations remain EP-02 scope.
+4. EP-00.02 implements configuration validation with safe defaults and blocked readiness when required declarations/budgets are missing. EP-00.03 provides dedicated PostgreSQL infrastructure and, through [the migration follow-up](tasks/EP-00.03-migration-runner.md), the G0 runner. Follow [the deployment guide](deployment/README.md) for explicit startup and migration commands. EP-00.04 provides CI checks, including migration tooling and offline checks. Business schema migrations remain EP-02 scope.
 5. Real sending remains disabled until separate explicit activation and release gates. Routine engineering autonomy does not activate external employer actions.
 
 ## Security defaults
@@ -133,4 +138,4 @@ The source documents were preserved, except for **approval status metadata synch
 
 Approved L0–L4 contents were preserved byte-for-byte during workspace preparation. Historical approval statements and filenames inside those documents are explained in [the specification index](docs/README.md).
 
-**Completed scope:** EP-00.01/02/03 and EP-00.04 workflow configuration with local checks. Hosted CI has not run. **Next prerequisite:** migration runner before G0 acceptance, then EP-01. See the [bootstrap verification record](tasks/EP-00.01-verification.md), [configuration task/results](tasks/EP-00.02-configuration.md), [PostgreSQL task/results](tasks/EP-00.03-postgresql.md), and [CI task/results](tasks/EP-00.04-ci.md) for actual checks and limitations.
+**Completed scope:** EP-00.01/02/03, the G0 migration follow-up, and EP-00.04 workflow configuration with local checks. Hosted CI has not run. **Next task:** EP-01 domain and policy. See the [bootstrap verification record](tasks/EP-00.01-verification.md), [configuration task/results](tasks/EP-00.02-configuration.md), [PostgreSQL task/results](tasks/EP-00.03-postgresql.md), [migration task/results](tasks/EP-00.03-migration-runner.md), and [CI task/results](tasks/EP-00.04-ci.md) for actual checks and limitations.

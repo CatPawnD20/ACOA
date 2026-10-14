@@ -1,0 +1,4 @@
+# EP-00.03 follow-up / G0: E-05/E-07/E-11; ADR-002/011/013.
+SQLAlchemy==2.1.4
+alembic==1.20.0
+psycopg[binary]==3.3.6

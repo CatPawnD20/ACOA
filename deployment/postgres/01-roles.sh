@@ -19,6 +19,8 @@ REVOKE ALL ON DATABASE acoa FROM PUBLIC;
 GRANT CONNECT ON DATABASE acoa TO acoa_migrator, acoa_app;
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 CREATE SCHEMA acoa AUTHORIZATION acoa_migrator;
+CREATE SCHEMA acoa_migrations AUTHORIZATION acoa_migrator;
+REVOKE ALL ON SCHEMA acoa_migrations FROM PUBLIC;
 GRANT USAGE ON SCHEMA acoa TO acoa_app;
 ALTER ROLE acoa_migrator IN DATABASE acoa SET search_path = acoa;
 ALTER ROLE acoa_app IN DATABASE acoa SET search_path = acoa;

@@ -1,0 +1,11 @@
+# Allow only migration image inputs; local secrets never enter the build context.
+**
+!migration.Dockerfile
+!migration-requirements.txt
+!migrate.py
+!alembic.ini
+!migrations/
+!migrations/env.py
+!migrations/versions/
+!migrations/versions/*.py
+!migrations/versions/README.md
