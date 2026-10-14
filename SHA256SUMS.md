@@ -1,6 +1,6 @@
 # ACOA current active-file integrity manifest
 
-Calculated on 2026-10-15 after EP-02.04 verification.
+Calculated on 2026-10-15 after EP-02.05 fault verification.
 Scope: active root, docs, tasks, src, tests, deployment and .github files.
 Excludes archived originals, this manifest, ignored secrets, environments and caches.
 The original workspace baseline remains preserved in archive/legacy-docs/SHA256SUMS.original-workspace.md.
@@ -33,10 +33,10 @@ df45ebd5b44da9ffcfe11c97b0fe4fffe260677481c70c0a0f124bdfcb9d969d  docs/L1-capabi
 15b991c2c362085694fed82d493c504929b5922bc7341ac53ae60fc7b89851e1  docs/L2-requirements-approved.md
 5072ad7d037fbbd0cf1d41e43d05f9cfcd565ed55e9b9c97e2997f29e3579c4f  docs/L3-architecture-approved.md
 7af2b0aec9933ec0ccf81cbf818759e0558980251f1fe770027da05e8f38b0fc  docs/L4-implementation-plan.md
-aacfe2e9528ffd0e165e0fd964acdb43279988ffaca22f88ca8953952fcb3c22  docs/README.md
+d8fe19ba766941cd4e7ffd51c435231bc5d14a91a951cdc5d409f4ecaed2b7b0  docs/README.md
 6cd46f98085099bf7a0b9a3d7aaa1a18800c8283c724bfe0651269fc4eb87a0f  docs/workspace-audit.md
 1760cbaa9181faf297de97c29dd6431e1d48c6a2929b825a40ff0a308afb25d6  pyproject.toml
-1532313b51b84c346c91a79c7808092ee58d1a718ad53403b770d9cf00d73c98  README.md
+7ee2ffd9fc23a1622f4b77458f084be2e750149f338ed22edda4ee13e04ca6fb  README.md
 aab65353362d0a5ba62427a44ec866a6c86c2de4b552e6a7895099b2f41a771d  src/acoa/__init__.py
 e9d6492f4ae56d69a793767c0de5f7e3c7c8ff8b968d3b7a120bf02a10eff356  src/acoa/application/__init__.py
 69d06d657ca02999693d2ae9bcd1e424100e955551f78b6500d12712b0abac38  src/acoa/application/decision_records.py
@@ -82,5 +82,6 @@ c72ee8de141c796baa9818ffbf1c0bc93dbc32c4fe7e60dbfc6f53a13c7542b8  tasks/EP-02.01
 b056dad260a235f8f6bd1abd4c08340680722decd527f34c3a36ccb64cd0f566  tasks/EP-02.02-application-ledger.md
 2c2122d6097107d5e5c1ec2849f67be4125507abd4a90a5cf0fe697feca50c82  tasks/EP-02.03-action-protocol.md
 b6f81ab4b6230cfb99a7dfbcd2ebfb6fe6eafb20977a925d20e82de02e5a2107  tasks/EP-02.04-reconciliation.md
+a9afbd4bf91313fb3a551ea868a261d25e0a3a0bb86a094fe9597e650777ed6c  tasks/EP-02.05-fault-verification.md
 5229ff396803f9cf0acd617b881df74908e60c7ebac4a4089bc59a8d16e53752  tests/test_config.py
 32485ef75d6723fb4e72e7ec9342c19f4c9803292d9cafe714b0e4102fd4d68f  tests/test_package_smoke.py
