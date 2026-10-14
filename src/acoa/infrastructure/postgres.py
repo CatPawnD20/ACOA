@@ -17,6 +17,10 @@ def require_transaction(connection: Connection) -> None:
 def validate_application_connection(connection: Connection) -> None:
     """Reject migration/admin sessions and other databases before accessing application state."""
     require_transaction(connection)
+    if connection.engine.echo or not connection.engine.hide_parameters:
+        raise DatabaseBoundaryError(
+            "Application engines must disable SQL echo and hide parameters."
+        )
     identity = connection.execute(
         text("SELECT current_database(), session_user, current_user")
     ).one()

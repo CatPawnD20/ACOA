@@ -7,10 +7,9 @@ from enum import StrEnum
 from uuid import UUID
 
 from acoa.config import Settings
+from acoa.domain.action_requests import PolicyRequest as PolicyRequest
 from acoa.domain.authorization import (
-    ActionKind,
     AuthorizationGrant,
-    Channel,
     DataCategory,
     SensitiveDataConsent,
     validate_scope,
@@ -118,29 +117,6 @@ class BudgetUsage:
             validate_optional_usage(amount, monetary=True)
         for count in (self.estimated_tokens, self.estimated_seconds):
             validate_optional_usage(count)
-
-
-@dataclass(frozen=True, slots=True)
-class PolicyRequest:
-    request_id: UUID = field(repr=False)
-    action: ActionKind
-    content_sha256: str = field(repr=False)
-    channel: Channel | None = None
-    recipient_id: UUID | None = field(default=None, repr=False)
-    account_id: UUID | None = field(default=None, repr=False)
-    data_categories: tuple[DataCategory, ...] = ()
-
-    def __post_init__(self) -> None:
-        require_identifier(self.request_id)
-        require_sha256(self.content_sha256)
-        if not isinstance(self.action, ActionKind):
-            raise DomainError("Policy requests require a recognized action kind.")
-        if self.channel is not None and not isinstance(self.channel, Channel):
-            raise DomainError("A request channel must be explicit.")
-        for identifier in (self.recipient_id, self.account_id):
-            if identifier is not None:
-                require_identifier(identifier)
-        validate_scope(self.data_categories, DataCategory)
 
 
 @dataclass(frozen=True, slots=True)

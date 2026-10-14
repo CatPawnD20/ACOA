@@ -95,6 +95,17 @@ Apply migrations explicitly before using the queue adapter. The app role cannot
 modify/delete event history or read Alembic metadata. EP-02.02 adds
 `0002_application_ledger` for canonical series, application episodes and lifecycle
 events. Registration is an intent record; it never implies successful delivery.
+`0003_action_protocol` adds private current-authority/evidence records, attempts,
+budget reservations and immutable policy decisions. Its initial authority remains
+dry-run with external actions disabled and no grant. Migrations do not activate
+providers, authenticate user permission or start an executor worker.
+
+PostgreSQL application adapters use the same explicitly installed tool dependencies.
+Supply a dedicated `acoa_app` SQLAlchemy engine with `hide_parameters=True`,
+`echo=False` and a bounded connection timeout. Queue/ledger/protocol operations
+require explicit caller transactions; the dispatch-store adapter commits its own
+short transactions before/after provider I/O. No `.env` discovery or connection
+factory is supplied by these adapters. See the task records for trust boundaries.
 
 Use the one-shot maintenance container to keep the database port unpublished:
 

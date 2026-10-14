@@ -7,6 +7,9 @@ them. Downgrade refuses destructive removal of retained queue and audit data.
 `0002_application_ledger` adds canonical application series, immutable episodes
 and lifecycle events. It preserves a separate submission state and prevents a
 second initial episode for the same target, including across campaigns.
+`0003_action_protocol` adds current safe-default authority, immutable authority
+history, bounded evidence, semantic attempt fencing, budget holds and structured
+policy decisions. Provider acknowledgement is not submission verification.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 

@@ -13,6 +13,7 @@ from acoa.application.policy_inputs import (
     evidence_status,
 )
 from acoa.config import external_action_readiness
+from acoa.domain.action_requests import request_binding_sha256 as request_binding_sha256
 from acoa.domain.authorization import (
     SENSITIVE_CATEGORIES,
     ActionKind,
@@ -20,7 +21,6 @@ from acoa.domain.authorization import (
     grant_is_active,
     sensitive_consent_covers,
 )
-from acoa.domain.reviews import content_digest
 
 POLICY_VERSION = "acoa-policy/1"
 EXTERNAL_ACTIONS = frozenset(
@@ -136,21 +136,6 @@ def check_global_state(request: PolicyRequest, context: PolicyContext) -> Reason
     ):
         return ReasonCode.GLOBAL_SAFE_MODE
     return None
-
-
-def request_binding_sha256(request: PolicyRequest) -> str:
-    """Bind trusted evidence to the exact content, actor, channel and recipient request."""
-    return content_digest(
-        {
-            "request_id": str(request.request_id),
-            "action": request.action.value,
-            "content_sha256": request.content_sha256,
-            "channel": request.channel.value if request.channel else None,
-            "recipient_id": str(request.recipient_id) if request.recipient_id else None,
-            "account_id": str(request.account_id) if request.account_id else None,
-            "data_categories": [category.value for category in request.data_categories],
-        }
-    )
 
 
 def check_fixed_mode(mode: PermissionMode, action: ActionKind) -> ReasonCode | None:
