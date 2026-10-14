@@ -20,30 +20,15 @@ from acoa.domain.tasks import (
     failure_outcome,
 )
 from acoa.domain.values import DomainError, require_identifier, require_version
-
-
-class QueueError(ValueError):
-    """A value-free queue boundary failure."""
+from acoa.infrastructure.postgres import DatabaseBoundaryError as QueueError
+from acoa.infrastructure.postgres import require_transaction as require_transaction
+from acoa.infrastructure.postgres import (
+    validate_application_connection as validate_queue_connection,
+)
 
 
 class LeaseLost(QueueError):
     """The worker no longer owns a current fenced lease."""
-
-
-def require_transaction(connection: Connection) -> None:
-    """The caller owns commit/rollback; audit and state changes must commit together."""
-    if not connection.in_transaction():
-        raise QueueError("Queue operations require an explicit caller-owned transaction.")
-
-
-def validate_queue_connection(connection: Connection) -> None:
-    """Reject migration/admin sessions and other databases before touching task state."""
-    require_transaction(connection)
-    identity = connection.execute(
-        text("SELECT current_database(), session_user, current_user")
-    ).one()
-    if tuple(identity) != ("acoa", "acoa_app", "acoa_app"):
-        raise QueueError("The queue requires the dedicated authenticated ACOA application role.")
 
 
 def snapshot_from_row(row: RowMapping, dependencies: tuple[UUID, ...] = ()) -> TaskSnapshot:

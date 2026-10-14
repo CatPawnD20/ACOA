@@ -143,4 +143,4 @@ Authenticated review ingestion and durable profile history remain later work.
 
 Approved L0–L4 contents were preserved byte-for-byte during workspace preparation. Historical approval statements and filenames inside those documents are explained in [the specification index](docs/README.md).
 
-**Completed scope:** EP-00 bootstrap/infrastructure, EP-01 domain/policy and EP-02.01 durable task queue, with local verification. Hosted CI has not run. See the [specification index](docs/README.md) for task results and exact verification limits. Application ledger, external-action protocol and later approved packages remain in progress; real sending remains disabled.
+**Completed scope:** EP-00 bootstrap/infrastructure, EP-01 domain/policy, EP-02.01 durable task queue and EP-02.02 application ledger, with local verification. Hosted CI has not run. See the [specification index](docs/README.md) for task results and exact verification limits. External-action protocol and later approved packages remain in progress; real sending remains disabled.

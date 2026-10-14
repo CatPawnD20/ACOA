@@ -92,7 +92,9 @@ The [migration runner](migrate.py) and [pinned tool requirements](migration-requ
 provide G0 migration infrastructure. EP-02.01 adds `0001_task_queue` for task runs,
 dependencies and events in `acoa`; Alembic metadata remains in `acoa_migrations`.
 Apply migrations explicitly before using the queue adapter. The app role cannot
-modify/delete event history or read Alembic metadata.
+modify/delete event history or read Alembic metadata. EP-02.02 adds
+`0002_application_ledger` for canonical series, application episodes and lifecycle
+events. Registration is an intent record; it never implies successful delivery.
 
 Use the one-shot maintenance container to keep the database port unpublished:
 
