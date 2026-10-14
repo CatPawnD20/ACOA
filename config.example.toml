@@ -1,0 +1,21 @@
+# EP-00.02 safe example. This file does not authorize any external action.
+dry_run = true
+external_actions_enabled = false
+
+# Omitted limits remain unset, never unlimited. No production budgets are invented.
+[applications]
+
+[outreach]
+
+# Monetary values are decimals; task time caps are in seconds.
+# Currency and all caps must be explicitly configured before readiness can pass.
+[budget]
+
+# A future PostgreSQL authorization record reference, not a grant created by this file.
+[authorization]
+
+[accounts]
+authorized_emails = []
+
+[privacy]
+allowed_data_categories = []

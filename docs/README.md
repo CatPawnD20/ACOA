@@ -32,5 +32,6 @@ G0/S0 in L4 describe the complete EP-00 package, including later configuration a
 - [Bootstrap task](../tasks/EP-00.01-bootstrap.md)
 - [Approved bootstrap implementation plan](../tasks/EP-00.01-implementation-plan.md)
 - [Bootstrap verification record](../tasks/EP-00.01-verification.md)
+- [Safe configuration task and verification](../tasks/EP-00.02-configuration.md)
 - [Archive index and original checksum records](../archive/legacy-docs/README.md)
 - [Current active-file checksum manifest](../SHA256SUMS.md)

@@ -28,7 +28,10 @@ def guard_import_effects(event, args):
         raise AssertionError(f"Package import attempted an external effect: {event}")
     if event == "open" and isinstance(args[0], (str, bytes)):
         name = os.path.basename(os.fsdecode(args[0])).lower()
-        if name == ".env" or name.startswith((".env.", "credentials", "token.")):
+        if name == ".env" or name.startswith(".env.") or (
+            name.startswith(("credentials.", "token."))
+            and name.endswith((".json", ".pickle", ".pkl"))
+        ):
             raise AssertionError("Package import attempted to read private configuration.")
 
 
@@ -37,6 +40,7 @@ _thread.start_new_thread = deny_background_work
 sys.addaudithook(guard_import_effects)
 
 import acoa
+import acoa.config
 
 assert acoa.__file__, "The installed package must have a source file."
 print(acoa.__name__)

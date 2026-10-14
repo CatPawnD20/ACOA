@@ -1,25 +1,29 @@
 # ACOA current active-file integrity manifest
 
-Calculated on 2026-10-14 after EP-00.01 implementation.
+Calculated on 2026-10-14 after EP-00.02 implementation.
 Scope: active root configuration/instructions and docs/, tasks/, src/, tests/ files.
-Excludes archive/, local environments/caches, and this manifest.
+Excludes archive/, local/private configuration, environments/caches, and this manifest.
 The original supplied manifest and pre-cleanup workspace hashes remain under archive/legacy-docs/.
 
 SHA-256  current relative path
 2eef2ee951af13e5b255ff6159d5bd912ed0d9c1be14911cafeba8370075bf96  .gitattributes
-d5d8bbe917924695bbfeccc2352b55f4e89068f6901fa1fe7348968b6e9c5041  .gitignore
+b4c4806e0743bada2ea9228ccc42976110f33d4dee2077f7cab4fb0d33ffaf60  .gitignore
 e3b5a21d4f55780aa436f9d23462635dae0ff2a2b77430937d79dc7f0b955f69  AGENTS.md
+6e906fcc64fc014787e67fb5b4d147855d4a07a06e1a28df9330cd605c70c6fc  config.example.toml
 5edb88c53f26d7133f1b1eaa9e490f710adbca124e2730619f04ba59be705bc3  docs/L0-project-definition.md
 df45ebd5b44da9ffcfe11c97b0fe4fffe260677481c70c0a0f124bdfcb9d969d  docs/L1-capabilities.md
 15b991c2c362085694fed82d493c504929b5922bc7341ac53ae60fc7b89851e1  docs/L2-requirements-approved.md
 5072ad7d037fbbd0cf1d41e43d05f9cfcd565ed55e9b9c97e2997f29e3579c4f  docs/L3-architecture-approved.md
 7af2b0aec9933ec0ccf81cbf818759e0558980251f1fe770027da05e8f38b0fc  docs/L4-implementation-plan.md
-26f2e1793a3716bd8d33785ef5ffe7044964fc380f973ae04e3da9f4fef913fb  docs/README.md
+dc7de7d644ff4e0afeb52e591c4f1d873d3a988c607f3537fb80118b6085bf80  docs/README.md
 6cd46f98085099bf7a0b9a3d7aaa1a18800c8283c724bfe0651269fc4eb87a0f  docs/workspace-audit.md
-750505e1b8254f3ca3b8e9e49df41c17924ab6184be610029ff671b2bdd90bf5  pyproject.toml
-1b2a7dc6cd45f5c3d52ac1bab6606506f8b8c46f376b46b9a87bb18ba1f4885a  README.md
+1760cbaa9181faf297de97c29dd6431e1d48c6a2929b825a40ff0a308afb25d6  pyproject.toml
+d8e1e5e4d9f29c9b57c89ac9c9b4e40703d81d8a9d233d38a8f473a58eb5d9ea  README.md
 aab65353362d0a5ba62427a44ec866a6c86c2de4b552e6a7895099b2f41a771d  src/acoa/__init__.py
+9a2b92ff3f0a3b1e3e5b1033b3c53351e2ef5b5a64aff6ad317b4ab11c5207e3  src/acoa/config.py
 9a275d35e3694cbcef0adad889d896f7f519402bde341f0dece8e5bb5c94fad5  tasks/EP-00.01-bootstrap.md
 1c3b3ba8883869fef1378e0510577859062424130a43b234632f935a30ac0223  tasks/EP-00.01-implementation-plan.md
 aa1d1deef46839400a94859037706f6a783bc755c18d137c6960ee39756def47  tasks/EP-00.01-verification.md
-873d07bf9a38572f3656af0f42e551c5194a44ddc14a535affbd482a75a9b292  tests/test_package_smoke.py
+c74bfb9975dfb03e5f72790f641a3d1a261d459c02e604292db5e3c5fbbc593f  tasks/EP-00.02-configuration.md
+5229ff396803f9cf0acd617b881df74908e60c7ebac4a4089bc59a8d16e53752  tests/test_config.py
+32485ef75d6723fb4e72e7ec9342c19f4c9803292d9cafe714b0e4102fd4d68f  tests/test_package_smoke.py

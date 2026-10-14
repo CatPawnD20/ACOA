@@ -25,6 +25,7 @@ testpaths = ["tests"]
 addopts = "--strict-config --strict-markers"
 markers = [
     "bootstrap: EP-00.01; K-01; E-09.01; E-10.03; ADR-001; no live actions.",
+    "configuration: EP-00.02; E-02.01; E-07.03; P-04/P-10/P-17; ADR-006/011.",
 ]
 
 [tool.ruff]
