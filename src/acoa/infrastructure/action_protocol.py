@@ -31,9 +31,11 @@ from acoa.domain.applications import (
     SubmissionState,
 )
 from acoa.domain.authorization import SENSITIVE_CATEGORIES, sensitive_consent_covers
+from acoa.domain.submission_evidence import IncidentKind
 from acoa.domain.values import require_identifier
 from acoa.infrastructure.action_usage import budget_usage, quota_usage
 from acoa.infrastructure.application_ledger import APPLICATION_SELECT, application_from_row
+from acoa.infrastructure.incidents import IncidentStore
 from acoa.infrastructure.policy_authority import AuthorityStore, PolicyAuthority
 from acoa.infrastructure.policy_codec import (
     decode_evidence_context,
@@ -178,7 +180,7 @@ class ActionProtocol:
         )
         return ActionState.PREPARED
 
-    def _locked(
+    def lock_attempt(
         self, attempt_id: UUID
     ) -> tuple[int, PolicyAuthority, PreparedAction, RowMapping, RowMapping]:
         require_identifier(attempt_id)
@@ -279,7 +281,7 @@ class ActionProtocol:
         ), context
 
     def reserve(self, attempt_id: UUID) -> ActionCheck:
-        revision, authority, prepared, row, application = self._locked(attempt_id)
+        revision, authority, prepared, row, application = self.lock_attempt(attempt_id)
         state = ActionState(row["state"])
         if state is not ActionState.PREPARED:
             return ActionCheck(state)
@@ -326,7 +328,7 @@ class ActionProtocol:
 
     def begin_execution(self, attempt_id: UUID) -> ActionCheck:
         """Commit this linearization point before any provider call; never return a second token."""
-        revision, authority, prepared, row, application = self._locked(attempt_id)
+        revision, authority, prepared, row, application = self.lock_attempt(attempt_id)
         state = ActionState(row["state"])
         if state is not ActionState.RESERVED:
             return ActionCheck(state)
@@ -392,7 +394,7 @@ class ActionProtocol:
         require_identifier(token)
         if receipt_ref is not None:
             require_identifier(receipt_ref)
-        _, _, _, row, _ = self._locked(attempt_id)
+        _, _, _, row, _ = self.lock_attempt(attempt_id)
         if row["execution_token"] != token:
             raise DatabaseBoundaryError("The response does not match the dispatched attempt.")
         state = ActionState(row["state"])
@@ -410,4 +412,6 @@ class ActionProtocol:
             SET submission_state = 'submission_unconfirmed' WHERE application_id = :id"""),
             {"id": row["application_id"]},
         )
+        if target is ActionState.UNCONFIRMED:
+            IncidentStore(self.connection).open(attempt_id, IncidentKind.UNKNOWN_SUBMISSION)
         return target

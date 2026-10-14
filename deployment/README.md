@@ -99,6 +99,8 @@ events. Registration is an intent record; it never implies successful delivery.
 budget reservations and immutable policy decisions. Its initial authority remains
 dry-run with external actions disabled and no grant. Migrations do not activate
 providers, authenticate user permission or start an executor worker.
+`0004_reconciliation` adds immutable submission proof and a pending review outbox.
+No notification is sent by a migration or reconciliation-store call.
 
 PostgreSQL application adapters use the same explicitly installed tool dependencies.
 Supply a dedicated `acoa_app` SQLAlchemy engine with `hide_parameters=True`,
