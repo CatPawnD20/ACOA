@@ -115,6 +115,11 @@ The source documents were preserved, except for **approval status metadata synch
 
 ## Security defaults
 
+EP-01.01 adds pure domain values for sourced profile claims, exact content-bound
+human review, immutable profile variants, separate hard/soft goals and stale-version
+references. No real profile is populated. See [the profile/goals record](tasks/EP-01.01-profile-goals.md).
+Authenticated review ingestion and durable profile history remain later work.
+
 - No credentials, OAuth tokens, personal documents, real `.env` files, or private data are included.
 - No code that accesses real employer websites, sends email or submits applications is included.
 - Until explicitly configured, `dry_run=true` and `external_actions_enabled=false` remain hard requirements.
