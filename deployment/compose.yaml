@@ -1,0 +1,43 @@
+# EP-00.03: E-05/E-07/E-11; ADR-002/011/013.
+name: acoa-dev
+
+services:
+  acoa-postgres:
+    image: postgres:18.6-trixie@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: acoa
+      POSTGRES_USER: acoa_admin
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_admin_password
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    secrets:
+      - postgres_admin_password
+      - postgres_migration_password
+      - postgres_app_password
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      - ./postgres/01-roles.sh:/docker-entrypoint-initdb.d/01-roles.sh:ro
+    networks:
+      - database
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U acoa_admin -d acoa']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 20s
+    shm_size: 128mb
+
+networks:
+  database:
+    internal: true
+
+volumes:
+  postgres-data:
+
+secrets:
+  postgres_admin_password:
+    file: ./secrets/postgres_admin_password
+  postgres_migration_password:
+    file: ./secrets/postgres_migration_password
+  postgres_app_password:
+    file: ./secrets/postgres_app_password

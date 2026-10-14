@@ -1,12 +1,12 @@
-# ACOA — Safe Configuration
+# ACOA — Safe Configuration and Dedicated PostgreSQL
 
-**Autonomous Career Opportunity Agent (ACOA)** is a personal, single-user career-opportunity discovery and authorized initial-application project. EP-00.01/02 provide an installable Python package, safe import checks, development tooling, and validated configuration. No discovery/application workflow or live integration is implemented.
+**Autonomous Career Opportunity Agent (ACOA)** is a personal, single-user career-opportunity discovery and authorized initial-application project. EP-00.01/02 provide an installable Python package, safe import checks, development tooling, and validated configuration. EP-00.03 adds a dedicated PostgreSQL Compose deployment. No discovery/application workflow is implemented.
 
 ## Architecture and current limits
 
-The approved architecture is a modular monolith in one Python repository (ADR-001). Later tasks add a dedicated PostgreSQL service and durable task execution (ADR-002/003/013), central ModelGateway/ModelRouter (ADR-015), and Policy Gate/External Action Executor (ADR-006/007). Browser access is layered and isolated; email providers use a shared contract; artifacts are versioned; deployment remains portable between local and cloud environments.
+The approved architecture is a modular monolith in one Python repository (ADR-001). A dedicated PostgreSQL service is configured under ADR-002/011/013. Later tasks add durable task execution (ADR-003), central ModelGateway/ModelRouter (ADR-015), and Policy Gate/External Action Executor (ADR-006/007). Browser access is layered and isolated; email providers use a shared contract; artifacts are versioned; deployment remains portable between local and cloud environments.
 
-The current package implements none of those services. Importing `acoa` or `acoa.config` reads no configuration and starts no network request, database connection, browser, model call, subprocess, or background job. Replies and follow-up emails remain user-sent under P-01/P-02.
+The Python package does not start those services. Importing `acoa` or `acoa.config` reads no configuration and starts no network request, database connection, browser, model call, subprocess, or background job. PostgreSQL is started explicitly through Compose; application database adapters and migrations remain later work. Replies and follow-up emails remain user-sent under P-01/P-02.
 
 ## Local development
 
@@ -85,7 +85,7 @@ The source documents were preserved, except for **approval status metadata synch
 1. Keep the five canonical specifications and AGENTS rules available in the repository. Approved document bytes are preserved by `.gitattributes`; code uses LF line endings.
 2. Work through focused tasks, using small functions, requirements-linked verification, and a final diff review. The user approved [the EP-00.01 plan](tasks/EP-00.01-implementation-plan.md) and local Git preparation on 2026-10-14.
 3. Local Git uses the `main` branch. No remote GitHub repository or push is included. When explicitly requested, create a private remote repository and review focused PRs before merging.
-4. EP-00.02 implements configuration validation with safe defaults and blocked readiness when required declarations/budgets are missing. The next task is EP-00.03: dedicated ACOA PostgreSQL/deployment and migration infrastructure. CI belongs to EP-00.04; application schemas belong to EP-02.
+4. EP-00.02 implements configuration validation with safe defaults and blocked readiness when required declarations/budgets are missing. EP-00.03 provides a dedicated PostgreSQL container/volume, private network, and separate admin/migration/application roles. Follow [the deployment guide](deployment/README.md) for explicit startup. The next task is EP-00.04 (CI); application schemas and migration code belong to later implementation tasks.
 5. Real sending remains disabled until separate explicit activation and release gates. Routine engineering autonomy does not activate external employer actions.
 
 ## Security defaults
@@ -103,6 +103,7 @@ The source documents were preserved, except for **approval status metadata synch
 - `tests/`: isolated bootstrap smoke checks
 - `pyproject.toml`: packaging and pinned direct development tools
 - `config.example.toml`: safe, explicit configuration example
+- `deployment/`: dedicated PostgreSQL Compose definitions, role initialization, and local secret preparation
 - `AGENTS.md`: persistent repository-specific Codex rules
 - `docs/README.md`: specification index
 - `docs/workspace-audit.md`: workspace findings, preservation checks, and proposed instruction refinements
@@ -111,4 +112,4 @@ The source documents were preserved, except for **approval status metadata synch
 
 Approved L0–L4 contents were preserved byte-for-byte during workspace preparation. Historical approval statements and filenames inside those documents are explained in [the specification index](docs/README.md).
 
-**Completed scope:** EP-00.01/02. **Next task:** EP-00.03. See the [bootstrap verification record](tasks/EP-00.01-verification.md) and [configuration task/results](tasks/EP-00.02-configuration.md) for actual checks and limitations.
+**Completed scope:** EP-00.01/02/03. **Next task:** EP-00.04. See the [bootstrap verification record](tasks/EP-00.01-verification.md), [configuration task/results](tasks/EP-00.02-configuration.md), and [PostgreSQL task/results](tasks/EP-00.03-postgresql.md) for actual checks and limitations.

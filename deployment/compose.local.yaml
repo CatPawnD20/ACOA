@@ -1,0 +1,12 @@
+# Optional host access; use only with compose.yaml.
+services:
+  acoa-postgres:
+    networks:
+      database: {}
+      local-access:
+        gw_priority: 1
+    ports:
+      - "127.0.0.1:${ACOA_POSTGRES_PORT:-15432}:5432"
+
+networks:
+  local-access: {}

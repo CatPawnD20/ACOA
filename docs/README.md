@@ -24,7 +24,7 @@ Some approved documents contain filenames rather than clickable canonical links.
 | `L3-architecture.md` (L3 example tree and former canonical path) | [L3](L3-architecture-approved.md) | [Identical original L3](../archive/legacy-docs/ACOA_L3_Technical_Architecture_v1.0_Approved.md) |
 | `ACOA_L4_Implementation_Plan_v0.1.md` (L3 section 20 handoff) | [Approved L4 v0.2](L4-implementation-plan.md) | [Historical L4 v0.1](../archive/legacy-docs/ACOA_L4_Implementation_Plan_v0.1.md) |
 
-G0/S0 in L4 describe the complete EP-00 package, including later configuration and database work. EP-00.01 alone implements package bootstrap and smoke checks; database connectivity/migration infrastructure belongs to EP-00.03, and application schemas belong to EP-02.
+G0/S0 in L4 describe the complete EP-00 package, including configuration, deployment, and CI work. EP-00.01 implements package bootstrap and smoke checks; EP-00.03 implements the dedicated PostgreSQL service and role/volume infrastructure. Application database adapters, migration code, and business schemas remain later work, including EP-02. Full G0 acceptance is not claimed before CI and its remaining checks.
 
 ## Supporting records
 
@@ -33,5 +33,7 @@ G0/S0 in L4 describe the complete EP-00 package, including later configuration a
 - [Approved bootstrap implementation plan](../tasks/EP-00.01-implementation-plan.md)
 - [Bootstrap verification record](../tasks/EP-00.01-verification.md)
 - [Safe configuration task and verification](../tasks/EP-00.02-configuration.md)
+- [Dedicated PostgreSQL task and verification](../tasks/EP-00.03-postgresql.md)
+- [PostgreSQL deployment guide](../deployment/README.md)
 - [Archive index and original checksum records](../archive/legacy-docs/README.md)
 - [Current active-file checksum manifest](../SHA256SUMS.md)
