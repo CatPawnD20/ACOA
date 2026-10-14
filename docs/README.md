@@ -39,6 +39,7 @@ G0/S0 in L4 describe the complete EP-00 package, including configuration, deploy
 - [Profile/goals domain and verification](../tasks/EP-01.01-profile-goals.md)
 - [Bounded authorization and sensitive consent](../tasks/EP-01.02-authorization.md)
 - [Deterministic Policy Gate](../tasks/EP-01.03-policy-gate.md)
+- [Versioned policy decision records](../tasks/EP-01.04-decision-records.md)
 - [CI task and verification](../tasks/EP-00.04-ci.md)
 - [Archive index and original checksum records](../archive/legacy-docs/README.md)
 - [Current active-file checksum manifest](../SHA256SUMS.md)

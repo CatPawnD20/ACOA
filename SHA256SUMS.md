@@ -1,6 +1,6 @@
 # ACOA current active-file integrity manifest
 
-Calculated on 2026-10-15 after EP-01.03 verification.
+Calculated on 2026-10-15 after EP-01.04 verification.
 Scope: active root, docs, tasks, src, tests, deployment and .github files.
 Excludes archived originals, this manifest, ignored secrets, environments and caches.
 The original workspace baseline remains preserved in archive/legacy-docs/SHA256SUMS.original-workspace.md.
@@ -29,12 +29,13 @@ df45ebd5b44da9ffcfe11c97b0fe4fffe260677481c70c0a0f124bdfcb9d969d  docs/L1-capabi
 15b991c2c362085694fed82d493c504929b5922bc7341ac53ae60fc7b89851e1  docs/L2-requirements-approved.md
 5072ad7d037fbbd0cf1d41e43d05f9cfcd565ed55e9b9c97e2997f29e3579c4f  docs/L3-architecture-approved.md
 7af2b0aec9933ec0ccf81cbf818759e0558980251f1fe770027da05e8f38b0fc  docs/L4-implementation-plan.md
-61bb80715696674bcdd5a1e4ab5913bcaccd9b3b63ce268beba6f291815ee74e  docs/README.md
+4bfbebac27a3f5f1fcf34281e05a07a4573322b3abf177bc43b9b671137ec4f6  docs/README.md
 6cd46f98085099bf7a0b9a3d7aaa1a18800c8283c724bfe0651269fc4eb87a0f  docs/workspace-audit.md
 1760cbaa9181faf297de97c29dd6431e1d48c6a2929b825a40ff0a308afb25d6  pyproject.toml
 6544be36835ffb17da54d60bf5e8cf3b4025aa2ed19a36ee824fecbddbc70bf4  README.md
 aab65353362d0a5ba62427a44ec866a6c86c2de4b552e6a7895099b2f41a771d  src/acoa/__init__.py
 e9d6492f4ae56d69a793767c0de5f7e3c7c8ff8b968d3b7a120bf02a10eff356  src/acoa/application/__init__.py
+69d06d657ca02999693d2ae9bcd1e424100e955551f78b6500d12712b0abac38  src/acoa/application/decision_records.py
 023747356901d1afaed82ff7a30142788753568daae30d9527141f1dbba0920d  src/acoa/application/policy_inputs.py
 1bd75b7194b2d37e7b31ac5ad262ba2e32efa04b9a0690caf3eb0fde87f1bbcb  src/acoa/application/policy.py
 9a2b92ff3f0a3b1e3e5b1033b3c53351e2ef5b5a64aff6ad317b4ab11c5207e3  src/acoa/config.py
@@ -54,5 +55,6 @@ c74bfb9975dfb03e5f72790f641a3d1a261d459c02e604292db5e3c5fbbc593f  tasks/EP-00.02
 080af808abed040826bdf64c9cc7a554f78b55056814a75fd4ddee42458e2c5e  tasks/EP-01.01-profile-goals.md
 46bd48297f83a0d79f2763c715a49c153a47c8486cc37bfeaa5c983d29843ff3  tasks/EP-01.02-authorization.md
 a081c7079145b843c5aafa8f8ee563b2c4b73c371a9f44735f2bb6393e813e97  tasks/EP-01.03-policy-gate.md
+039ebdcffbd305221c83dc72b0f886b342e99be380c03839ef45564fcc9fbed2  tasks/EP-01.04-decision-records.md
 5229ff396803f9cf0acd617b881df74908e60c7ebac4a4089bc59a8d16e53752  tests/test_config.py
 32485ef75d6723fb4e72e7ec9342c19f4c9803292d9cafe714b0e4102fd4d68f  tests/test_package_smoke.py
