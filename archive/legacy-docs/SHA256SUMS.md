@@ -1,0 +1,12 @@
+# ACOA bundle integrity manifest
+
+SHA-256  relative path
+ce90bb335755260a2f2ab14b4147d1eacf0c84367806f3679bdf42838cfe4ded  AGENTS.md
+dd2a61fa8a81b43df8671e2dcf258bad08767263c249a2b80cf6a9f061bb6b44  README.md
+5edb88c53f26d7133f1b1eaa9e490f710adbca124e2730619f04ba59be705bc3  docs/L0-project-definition.md
+df45ebd5b44da9ffcfe11c97b0fe4fffe260677481c70c0a0f124bdfcb9d969d  docs/L1-capabilities.md
+15b991c2c362085694fed82d493c504929b5922bc7341ac53ae60fc7b89851e1  docs/L2-requirements-approved.md
+5072ad7d037fbbd0cf1d41e43d05f9cfcd565ed55e9b9c97e2997f29e3579c4f  docs/L3-architecture.md
+7af2b0aec9933ec0ccf81cbf818759e0558980251f1fe770027da05e8f38b0fc  docs/L4-implementation-plan.md
+d49c20d0b8c6b9fe4063dcbb60d2744b2b2315f8e65f0a55da8776e400582a74  docs/README.md
+d7fc1eff9db0310bf20cd98a2f57d2354b2bd3e8613e450a4cf53b1a16d7157b  tasks/EP-00.01-bootstrap.md

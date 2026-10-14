@@ -1,0 +1,4 @@
+* text=auto eol=lf
+
+# Preserve approved documents and original checksum records byte-for-byte.
+*.md -text
