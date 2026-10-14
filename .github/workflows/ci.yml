@@ -59,11 +59,11 @@ jobs:
       - name: Lint
         run: python -m ruff check .
       - name: Check formatting
-        run: python -m ruff format --check src tests deployment/prepare_local.py deployment/migrate.py deployment/migrations/env.py
+        run: python -m ruff format --check src tests deployment/prepare_local.py deployment/migrate.py deployment/migrations
       - name: Check types
         run: |
           python -m mypy
-          python -m mypy deployment/prepare_local.py deployment/migrate.py deployment/migrations/env.py
+          python -m mypy deployment/prepare_local.py deployment/migrate.py deployment/migrations
       - name: Check migration graph and offline SQL without database credentials
         run: |
           python deployment/migrate.py heads

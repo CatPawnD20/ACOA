@@ -1,10 +1,11 @@
 # Application revisions
 
-This directory intentionally contains no revisions at the G0 bootstrap gate.
-Business schema revisions belong to EP-02. The migration runner supports Alembic
-revision modules placed here; revision authoring and autogeneration are outside
-this bootstrap task. Review SQL, privilege implications, and recovery behavior
-before applying a revision. Do not create synthetic or empty baseline revisions.
+The G0 bootstrap supplied the runner without a synthetic baseline. EP-02.01 adds
+`0001_task_queue`, creating task runs, immutable enqueue dependencies and event
+history. The application role may append/read events but cannot update/delete
+them. Downgrade refuses destructive removal of retained queue and audit data.
+Review SQL, privilege implications and recovery behavior before applying any
+revision. Do not edit applied revisions or create empty baseline revisions.
 
 Use the `acoa` schema for application objects created by `acoa_migrator`, so the
 existing default application grants apply. Alembic's own version metadata lives

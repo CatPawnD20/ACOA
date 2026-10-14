@@ -6,7 +6,7 @@
 
 The approved architecture is a modular monolith in one Python repository (ADR-001). A dedicated PostgreSQL service is configured under ADR-002/011/013. Later tasks add durable task execution (ADR-003), central ModelGateway/ModelRouter (ADR-015), and Policy Gate/External Action Executor (ADR-006/007). Browser access is layered and isolated; email providers use a shared contract; artifacts are versioned; deployment remains portable between local and cloud environments.
 
-The Python package does not start those services. Importing `acoa` or `acoa.config` reads no configuration and starts no network request, database connection, browser, model call, subprocess, or background job. PostgreSQL and the migration runner are started explicitly; application database adapters and business revisions remain later work. Replies and follow-up emails remain user-sent under P-01/P-02.
+The Python package does not start those services. Importing `acoa` or `acoa.config` reads no configuration and starts no network request, database connection, browser, model call, subprocess, or background job. PostgreSQL and migrations are started explicitly. EP-02.01 adds a transaction-scoped task queue adapter; it never starts workers or opens connections on import. Replies and follow-up emails remain user-sent under P-01/P-02.
 
 ## Local development
 
@@ -143,4 +143,4 @@ Authenticated review ingestion and durable profile history remain later work.
 
 Approved L0–L4 contents were preserved byte-for-byte during workspace preparation. Historical approval statements and filenames inside those documents are explained in [the specification index](docs/README.md).
 
-**Completed scope:** EP-00.01/02/03, the G0 migration follow-up, and EP-00.04 workflow configuration with local checks. Hosted CI has not run. **Next task:** EP-01 domain and policy. See the [bootstrap verification record](tasks/EP-00.01-verification.md), [configuration task/results](tasks/EP-00.02-configuration.md), [PostgreSQL task/results](tasks/EP-00.03-postgresql.md), [migration task/results](tasks/EP-00.03-migration-runner.md), and [CI task/results](tasks/EP-00.04-ci.md) for actual checks and limitations.
+**Completed scope:** EP-00 bootstrap/infrastructure, EP-01 domain/policy and EP-02.01 durable task queue, with local verification. Hosted CI has not run. See the [specification index](docs/README.md) for task results and exact verification limits. Application ledger, external-action protocol and later approved packages remain in progress; real sending remains disabled.

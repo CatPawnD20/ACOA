@@ -89,8 +89,10 @@ Diagnose startup errors and perform deliberate credential rotation when needed.
 ## Explicit migrations
 
 The [migration runner](migrate.py) and [pinned tool requirements](migration-requirements.txt)
-provide G0 migration infrastructure. There are no business revisions yet. An empty
-`upgrade head` creates only Alembic's empty version table in `acoa_migrations`.
+provide G0 migration infrastructure. EP-02.01 adds `0001_task_queue` for task runs,
+dependencies and events in `acoa`; Alembic metadata remains in `acoa_migrations`.
+Apply migrations explicitly before using the queue adapter. The app role cannot
+modify/delete event history or read Alembic metadata.
 
 Use the one-shot maintenance container to keep the database port unpublished:
 
