@@ -1,16 +1,17 @@
 """EP-01.01: F-01.01–07; P-03/P-05/P-18; ADR-001/002."""
 
-import hashlib
-import json
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from enum import StrEnum
 from uuid import UUID
 
+from acoa.domain.reviews import ReviewDecision as ReviewDecision
+from acoa.domain.reviews import UserReview as UserReview
+from acoa.domain.reviews import content_digest
+from acoa.domain.reviews import validate_review_target as validate_review_target
 from acoa.domain.values import (
     DomainError,
     require_identifier,
-    require_sha256,
     require_text,
     require_timestamp,
     require_version,
@@ -21,11 +22,6 @@ class SourceKind(StrEnum):
     USER_STATEMENT = "user_statement"
     DOCUMENT = "document"
     EXTERNAL = "external"
-
-
-class ReviewDecision(StrEnum):
-    APPROVE = "approve"
-    REJECT = "reject"
 
 
 class VerificationStatus(StrEnum):
@@ -46,41 +42,6 @@ class SourceReference:
         require_timestamp(self.observed_at)
         if not isinstance(self.kind, SourceKind):
             raise DomainError("A source kind must be explicit.")
-
-
-@dataclass(frozen=True, slots=True)
-class UserReview:
-    """A recorded user decision supplied only by a trusted human-input adapter."""
-
-    review_id: UUID = field(repr=False)
-    target_id: UUID = field(repr=False)
-    target_version: int
-    content_sha256: str = field(repr=False)
-    decision: ReviewDecision
-    reviewed_at: datetime
-
-    def __post_init__(self) -> None:
-        require_identifier(self.review_id)
-        require_identifier(self.target_id)
-        require_version(self.target_version)
-        require_sha256(self.content_sha256)
-        require_timestamp(self.reviewed_at)
-        if not isinstance(self.decision, ReviewDecision):
-            raise DomainError("A review decision must be explicit.")
-
-
-def validate_review_target(
-    review: UserReview, target_id: UUID, version: int, updated_at: datetime, content_sha256: str
-) -> None:
-    """Bind human review to an exact object version and prohibit backdated approval."""
-    if not isinstance(review, UserReview):
-        raise DomainError("A trusted user review record is required.")
-    if review.target_id != target_id or review.target_version != version:
-        raise DomainError("The review targets another object or a stale version.")
-    if review.content_sha256 != content_sha256:
-        raise DomainError("The reviewed content differs from the current object.")
-    if review.reviewed_at < updated_at:
-        raise DomainError("The review predates the reviewed version.")
 
 
 def validate_sources(sources: tuple[SourceReference, ...], updated_at: datetime) -> None:
@@ -132,9 +93,7 @@ def fact_content_sha256(fact: ProfileFact) -> str:
             for source in fact.sources
         ],
     }
-    return hashlib.sha256(
-        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    ).hexdigest()
+    return content_digest(payload)
 
 
 def validate_fact_verification(fact: ProfileFact) -> None:
@@ -259,9 +218,7 @@ def variant_content_sha256(variant: ProfileVariant) -> str:
             for fact in variant.facts
         ],
     }
-    return hashlib.sha256(
-        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    ).hexdigest()
+    return content_digest(payload)
 
 
 def validate_variant_review(variant: ProfileVariant) -> None:

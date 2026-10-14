@@ -1,6 +1,6 @@
 # ACOA current active-file integrity manifest
 
-Calculated on 2026-10-14 after EP-01.01 implementation.
+Calculated on 2026-10-14 after EP-01.02 implementation.
 Scope: active root configuration/instructions and docs/, tasks/, src/, tests/, deployment/, .github/ files.
 Excludes archive/, local/private configuration, environments/caches, and this manifest.
 The original supplied manifest and pre-cleanup workspace hashes remain under archive/legacy-docs/.
@@ -29,15 +29,17 @@ df45ebd5b44da9ffcfe11c97b0fe4fffe260677481c70c0a0f124bdfcb9d969d  docs/L1-capabi
 15b991c2c362085694fed82d493c504929b5922bc7341ac53ae60fc7b89851e1  docs/L2-requirements-approved.md
 5072ad7d037fbbd0cf1d41e43d05f9cfcd565ed55e9b9c97e2997f29e3579c4f  docs/L3-architecture-approved.md
 7af2b0aec9933ec0ccf81cbf818759e0558980251f1fe770027da05e8f38b0fc  docs/L4-implementation-plan.md
-d6545a30d78aacbffda3fc2feaa51c0c0f54c2dc1bed2a9744addb5c375f8871  docs/README.md
+c6bb61b78de64d6f4c2b0cf487d362ccd695bec355b9a9d01cb8dd96a69ff7cc  docs/README.md
 6cd46f98085099bf7a0b9a3d7aaa1a18800c8283c724bfe0651269fc4eb87a0f  docs/workspace-audit.md
 1760cbaa9181faf297de97c29dd6431e1d48c6a2929b825a40ff0a308afb25d6  pyproject.toml
 6544be36835ffb17da54d60bf5e8cf3b4025aa2ed19a36ee824fecbddbc70bf4  README.md
 aab65353362d0a5ba62427a44ec866a6c86c2de4b552e6a7895099b2f41a771d  src/acoa/__init__.py
 9a2b92ff3f0a3b1e3e5b1033b3c53351e2ef5b5a64aff6ad317b4ab11c5207e3  src/acoa/config.py
 6301c5554440a4a797becf206294c322608937683054ce1bd3524963fdf4c1d0  src/acoa/domain/__init__.py
+a7bbed24a9244298ae080fac059680f9253de79be8b96dc3617917f9964ccba9  src/acoa/domain/authorization.py
 b317265213e900cd3ac681fbb04ebefdd2d58497b1c0fd1ac2e625124a9c7846  src/acoa/domain/goals.py
-5076de925cbdd83ad98a5f13d7c7d05d593cc9fdcef686e71fb8acd18a8af0c0  src/acoa/domain/profile.py
+f520a62b2aec302c4d68350f2805086a151c350d0fc59e382285503adc910469  src/acoa/domain/profile.py
+b87d9807743652d486d89787648a59e1cbe8f246be73ba652898a1da67feb735  src/acoa/domain/reviews.py
 36258ac01322cd3bdf281d889471493059e0dcd6c8012146c1e8ff2b4d645f10  src/acoa/domain/values.py
 9a275d35e3694cbcef0adad889d896f7f519402bde341f0dece8e5bb5c94fad5  tasks/EP-00.01-bootstrap.md
 1c3b3ba8883869fef1378e0510577859062424130a43b234632f935a30ac0223  tasks/EP-00.01-implementation-plan.md
@@ -47,5 +49,6 @@ c74bfb9975dfb03e5f72790f641a3d1a261d459c02e604292db5e3c5fbbc593f  tasks/EP-00.02
 715e65e6b2a8aa8580b2f025e03c43782ff380ddabb82843eccf312a291f04dc  tasks/EP-00.03-postgresql.md
 08fa965f130f0314ead6421bb3e9e8e5c9a0d4309bb4bc1077144d8912769992  tasks/EP-00.04-ci.md
 080af808abed040826bdf64c9cc7a554f78b55056814a75fd4ddee42458e2c5e  tasks/EP-01.01-profile-goals.md
+46bd48297f83a0d79f2763c715a49c153a47c8486cc37bfeaa5c983d29843ff3  tasks/EP-01.02-authorization.md
 5229ff396803f9cf0acd617b881df74908e60c7ebac4a4089bc59a8d16e53752  tests/test_config.py
 32485ef75d6723fb4e72e7ec9342c19f4c9803292d9cafe714b0e4102fd4d68f  tests/test_package_smoke.py
