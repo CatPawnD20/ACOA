@@ -10,14 +10,15 @@ The Python package does not start those services. Importing `acoa` or `acoa.conf
 
 ## Local development
 
-Python 3.12 is the verified baseline; package metadata requires Python >=3.12. Python 3.12.14 on Windows was used for verification. Other Python versions and operating systems have not been exercised.
+Python 3.12 is the verified baseline; package metadata requires Python >=3.12. Python 3.12.14 was exercised on Windows and in a clean Debian Linux container. Other Python versions and GitHub-hosted runner environments have not been exercised.
 
-The pinned direct tools are pytest 9.1.1, Ruff 0.17.0, mypy 1.18.2, and the Hatchling 1.32.4 build backend. There are no runtime dependencies. Transitive development dependencies are resolved by pip; a complete dependency lock is not claimed.
+The pinned direct tools are pytest 9.1.1, Ruff 0.17.0, mypy 1.18.2, and the Hatchling 1.32.4 build backend. CI also pins pip 26.2.1 and uses pip-audit 2.10.1 in a separate tool environment. There are no runtime dependencies. Transitive development dependencies are resolved by pip; a complete dependency lock is not claimed.
 
 From the repository root, use an installed Python 3.12 interpreter to create an isolated environment. PowerShell commands:
 
 ```powershell
 python -m venv .venv
+& .\.venv\Scripts\python.exe -m pip --isolated install --index-url https://pypi.org/simple pip==26.2.1
 & .\.venv\Scripts\python.exe -m pip --isolated install --index-url https://pypi.org/simple --no-binary=mypy -e ".[dev]"
 & .\.venv\Scripts\python.exe -m pytest -q
 & .\.venv\Scripts\python.exe -m ruff check .
@@ -41,6 +42,25 @@ $env:TMP = $env:TEMP
 ```
 
 Smoke tests use a fresh child process outside the source working directory, with inherited credentials removed and guards rejecting network, subprocess, background-thread, and private configuration access. Metadata verification confirms that all declared dependencies are restricted to the development extra.
+
+## Continuous integration
+
+[The CI workflow](.github/workflows/ci.yml) runs existing tests, Ruff, strict mypy
+(including the local password-preparation script), and dependency consistency on
+Python 3.12.14 for Ubuntu 24.04 and Windows 2022. The Linux job additionally audits
+all installed quality-environment packages, including the build backend, for known
+vulnerabilities. A separate job scans complete checked-out Git history with
+Gitleaks, using redacted output and a checksum-verified binary.
+
+External actions are pinned by commit SHA; repository access is read-only and
+checkout credentials are not persisted. No application credentials, database
+service, deployment step, or live sending is configured. The workflow triggers
+on pushes to `main`, pull requests, and explicit manual dispatch. It becomes
+active only after a separately authorized push to a GitHub remote with Actions
+enabled. Local checks do not prove a hosted run has passed.
+
+See [the CI task record](tasks/EP-00.04-ci.md) for tool versions, audit scope,
+verification results, and remaining G0 prerequisites.
 
 ## Explicit, safe configuration
 
@@ -85,7 +105,7 @@ The source documents were preserved, except for **approval status metadata synch
 1. Keep the five canonical specifications and AGENTS rules available in the repository. Approved document bytes are preserved by `.gitattributes`; code uses LF line endings.
 2. Work through focused tasks, using small functions, requirements-linked verification, and a final diff review. The user approved [the EP-00.01 plan](tasks/EP-00.01-implementation-plan.md) and local Git preparation on 2026-10-14.
 3. Local Git uses the `main` branch. No remote GitHub repository or push is included. When explicitly requested, create a private remote repository and review focused PRs before merging.
-4. EP-00.02 implements configuration validation with safe defaults and blocked readiness when required declarations/budgets are missing. EP-00.03 provides a dedicated PostgreSQL container/volume, private network, and separate admin/migration/application roles. Follow [the deployment guide](deployment/README.md) for explicit startup. The next task is EP-00.04 (CI); application schemas and migration code belong to later implementation tasks.
+4. EP-00.02 implements configuration validation with safe defaults and blocked readiness when required declarations/budgets are missing. EP-00.03 provides a dedicated PostgreSQL container/volume, private network, and separate admin/migration/application roles. Follow [the deployment guide](deployment/README.md) for explicit startup. EP-00.04 provides CI checks. Before closing G0, a focused bootstrap follow-up must add the migration runner; business schema migrations remain EP-02 scope.
 5. Real sending remains disabled until separate explicit activation and release gates. Routine engineering autonomy does not activate external employer actions.
 
 ## Security defaults
@@ -104,6 +124,7 @@ The source documents were preserved, except for **approval status metadata synch
 - `pyproject.toml`: packaging and pinned direct development tools
 - `config.example.toml`: safe, explicit configuration example
 - `deployment/`: dedicated PostgreSQL Compose definitions, role initialization, and local secret preparation
+- `.github/workflows/`: CI checks without deployment or real-provider credentials
 - `AGENTS.md`: persistent repository-specific Codex rules
 - `docs/README.md`: specification index
 - `docs/workspace-audit.md`: workspace findings, preservation checks, and proposed instruction refinements
@@ -112,4 +133,4 @@ The source documents were preserved, except for **approval status metadata synch
 
 Approved L0–L4 contents were preserved byte-for-byte during workspace preparation. Historical approval statements and filenames inside those documents are explained in [the specification index](docs/README.md).
 
-**Completed scope:** EP-00.01/02/03. **Next task:** EP-00.04. See the [bootstrap verification record](tasks/EP-00.01-verification.md), [configuration task/results](tasks/EP-00.02-configuration.md), and [PostgreSQL task/results](tasks/EP-00.03-postgresql.md) for actual checks and limitations.
+**Completed scope:** EP-00.01/02/03 and EP-00.04 workflow configuration with local checks. Hosted CI has not run. **Next prerequisite:** migration runner before G0 acceptance, then EP-01. See the [bootstrap verification record](tasks/EP-00.01-verification.md), [configuration task/results](tasks/EP-00.02-configuration.md), [PostgreSQL task/results](tasks/EP-00.03-postgresql.md), and [CI task/results](tasks/EP-00.04-ci.md) for actual checks and limitations.

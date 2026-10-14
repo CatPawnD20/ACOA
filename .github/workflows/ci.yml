@@ -1,0 +1,93 @@
+# EP-00.04: E-07/E-09/E-10; P-17; ADR-001/011.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+jobs:
+  quality:
+    name: Python 3.12 / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.14"
+      - name: Install packaging tools
+        run: |
+          python -m pip --isolated install --index-url https://pypi.org/simple pip==26.2.1
+          python -c "import tomllib; print('\n'.join(tomllib.load(open('pyproject.toml', 'rb'))['build-system']['requires']))" > "$RUNNER_TEMP/acoa-build-requirements.txt"
+          python -m pip --isolated install --index-url https://pypi.org/simple -r "$RUNNER_TEMP/acoa-build-requirements.txt"
+      - name: Install editable build requirements
+        run: |
+          python -c "import hatchling.build; print('\n'.join(hatchling.build.get_requires_for_build_editable()))" > "$RUNNER_TEMP/acoa-editable-requirements.txt"
+          python -m pip --isolated install --index-url https://pypi.org/simple -r "$RUNNER_TEMP/acoa-editable-requirements.txt"
+      - name: Install package and development tools
+        run: python -m pip --isolated install --index-url https://pypi.org/simple --no-binary=mypy -e ".[dev]"
+      - name: Check dependency consistency
+        run: python -m pip --isolated check
+      - name: Run existing unit and import checks
+        run: python -m pytest -q
+      - name: Lint
+        run: python -m ruff check .
+      - name: Check formatting
+        run: python -m ruff format --check src tests deployment/prepare_local.py
+      - name: Check types
+        run: |
+          python -m mypy
+          python -m mypy deployment/prepare_local.py
+      - name: Audit installed build and development dependencies
+        if: runner.os == 'Linux'
+        run: |
+          python -m pip list --format=freeze --exclude acoa > "$RUNNER_TEMP/acoa-dependencies.txt"
+          python -m venv "$RUNNER_TEMP/acoa-audit"
+          "$RUNNER_TEMP/acoa-audit/bin/python" -m pip --isolated install --index-url https://pypi.org/simple pip-audit==2.10.1
+          "$RUNNER_TEMP/acoa-audit/bin/python" -m pip_audit --strict --no-deps --disable-pip --progress-spinner off -r "$RUNNER_TEMP/acoa-dependencies.txt"
+
+  secrets:
+    name: Git history secret scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out complete history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install checksum-verified Gitleaks
+        shell: bash
+        run: |
+          archive="$RUNNER_TEMP/gitleaks_8.29.1_linux_x64.tar.gz"
+          curl --fail --silent --show-error --location https://github.com/gitleaks/gitleaks/releases/download/v8.29.1/gitleaks_8.29.1_linux_x64.tar.gz --output "$archive"
+          printf '%s  %s\n' e4eb209d04e20339d77122a3bdf9cd41351255cfb27ebcb75e85325e04f88924 "$archive" | sha256sum --check --strict
+          mkdir "$RUNNER_TEMP/acoa-gitleaks"
+          tar --no-same-owner -xzf "$archive" -C "$RUNNER_TEMP/acoa-gitleaks" gitleaks
+      - name: Scan complete checked-out Git history
+        shell: bash
+        run: '"$RUNNER_TEMP/acoa-gitleaks/gitleaks" git --redact --no-banner --ignore-gitleaks-allow --log-opts="--all" --exit-code 1 .'

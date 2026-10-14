@@ -1,12 +1,13 @@
 # ACOA current active-file integrity manifest
 
-Calculated on 2026-10-14 after EP-00.03 implementation.
-Scope: active root configuration/instructions and docs/, tasks/, src/, tests/, deployment/ files.
+Calculated on 2026-10-14 after EP-00.04 implementation.
+Scope: active root configuration/instructions and docs/, tasks/, src/, tests/, deployment/, .github/ files.
 Excludes archive/, local/private configuration, environments/caches, and this manifest.
 The original supplied manifest and pre-cleanup workspace hashes remain under archive/legacy-docs/.
 
 SHA-256  current relative path
 2eef2ee951af13e5b255ff6159d5bd912ed0d9c1be14911cafeba8370075bf96  .gitattributes
+af50d2df33c16eb069d13654944502bb638b817a4b246b2169219ebf4d3c910e  .github/workflows/ci.yml
 b4c4806e0743bada2ea9228ccc42976110f33d4dee2077f7cab4fb0d33ffaf60  .gitignore
 e3b5a21d4f55780aa436f9d23462635dae0ff2a2b77430937d79dc7f0b955f69  AGENTS.md
 6e906fcc64fc014787e67fb5b4d147855d4a07a06e1a28df9330cd605c70c6fc  config.example.toml
@@ -21,10 +22,10 @@ df45ebd5b44da9ffcfe11c97b0fe4fffe260677481c70c0a0f124bdfcb9d969d  docs/L1-capabi
 15b991c2c362085694fed82d493c504929b5922bc7341ac53ae60fc7b89851e1  docs/L2-requirements-approved.md
 5072ad7d037fbbd0cf1d41e43d05f9cfcd565ed55e9b9c97e2997f29e3579c4f  docs/L3-architecture-approved.md
 7af2b0aec9933ec0ccf81cbf818759e0558980251f1fe770027da05e8f38b0fc  docs/L4-implementation-plan.md
-3b802f05cbdd18af338ef3572b153165fcca9ae639986f61a0e9ef14977d2ed1  docs/README.md
+ae8b0f2479880388e5765a8ecafabf328c02b1a20b2dac23502359a92903d755  docs/README.md
 6cd46f98085099bf7a0b9a3d7aaa1a18800c8283c724bfe0651269fc4eb87a0f  docs/workspace-audit.md
 1760cbaa9181faf297de97c29dd6431e1d48c6a2929b825a40ff0a308afb25d6  pyproject.toml
-794b59e44c3b014445939e4aab697e37ede16502d34b9ba94cbc0ee3f9354544  README.md
+3c2f7d42b51c2872d04febd8467b8aefa9e5b7abced44f8ef2a070d6d06e051b  README.md
 aab65353362d0a5ba62427a44ec866a6c86c2de4b552e6a7895099b2f41a771d  src/acoa/__init__.py
 9a2b92ff3f0a3b1e3e5b1033b3c53351e2ef5b5a64aff6ad317b4ab11c5207e3  src/acoa/config.py
 9a275d35e3694cbcef0adad889d896f7f519402bde341f0dece8e5bb5c94fad5  tasks/EP-00.01-bootstrap.md
@@ -32,5 +33,6 @@ aab65353362d0a5ba62427a44ec866a6c86c2de4b552e6a7895099b2f41a771d  src/acoa/__ini
 aa1d1deef46839400a94859037706f6a783bc755c18d137c6960ee39756def47  tasks/EP-00.01-verification.md
 c74bfb9975dfb03e5f72790f641a3d1a261d459c02e604292db5e3c5fbbc593f  tasks/EP-00.02-configuration.md
 715e65e6b2a8aa8580b2f025e03c43782ff380ddabb82843eccf312a291f04dc  tasks/EP-00.03-postgresql.md
+996f33c74b9da8b0d4a9aed0f549a244f254a3480f5ac60f2154625f34e0e9cd  tasks/EP-00.04-ci.md
 5229ff396803f9cf0acd617b881df74908e60c7ebac4a4089bc59a8d16e53752  tests/test_config.py
 32485ef75d6723fb4e72e7ec9342c19f4c9803292d9cafe714b0e4102fd4d68f  tests/test_package_smoke.py
