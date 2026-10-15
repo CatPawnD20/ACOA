@@ -20,6 +20,8 @@ from acoa.domain.model_calls import (
     model_request_sha256,
     validate_output_object,
 )
+from acoa.domain.model_context import PackedModelContext, require_current_context
+from acoa.domain.model_privacy import DataSensitivity
 from acoa.domain.model_quality import QualityReport, output_content_sha256, quality_passes
 from acoa.domain.model_routing import ModelOption, RoutingPolicy, RoutingStrategy, RoutingTask
 from acoa.domain.values import DomainError, require_identifier, require_text
@@ -36,6 +38,7 @@ class ModelRunInput:
     prompt_version: str
     output_schema_version: str
     prompt: str = field(repr=False)
+    context: PackedModelContext | None = field(default=None, repr=False)
 
     def __post_init__(self) -> None:
         for identifier in (self.route_id, self.task_id, self.lease_owner, self.lease_token):
@@ -44,6 +47,8 @@ class ModelRunInput:
             require_text(version)
         if not isinstance(self.prompt, str):
             raise DomainError("Workflow input must be explicit text.")
+        if self.context is not None and not isinstance(self.context, PackedModelContext):
+            raise DomainError("Workflow context must be an explicitly packed context.")
 
 
 @dataclass(frozen=True, slots=True)
@@ -74,7 +79,17 @@ def routing_input_sha256(
     catalog: tuple[ModelOption, ...],
 ) -> str:
     payload = {
-        "run": asdict(run),
+        "run": {
+            "route_id": run.route_id,
+            "task_id": run.task_id,
+            "lease_owner": run.lease_owner,
+            "lease_token": run.lease_token,
+            "prompt_version": run.prompt_version,
+            "output_schema_version": run.output_schema_version,
+            "prompt_sha256": sha256(run.prompt.encode("utf-8")).hexdigest(),
+            "context_sha256": run.context.context_sha256 if run.context else None,
+            "context_component_sha256s": run.context.component_sha256s if run.context else (),
+        },
         "task": asdict(task),
         "policy": asdict(policy),
         "catalog": [asdict(item) for item in catalog],
@@ -130,6 +145,23 @@ def stage_request(
 ) -> ModelCallRequest:
     if task.required_input_tokens is None:
         raise DomainError("Model workflow input bound is missing.")
+    context_json: str | None = None
+    context_sha256: str | None = None
+    context_component_sha256s: tuple[str, ...] = ()
+    data_categories = task.categories
+    if run.context is None:
+        if task.sensitivity is not DataSensitivity.PUBLIC or task.categories:
+            raise DomainError("Nonpublic model work requires explicitly packed context.")
+    else:
+        require_current_context(run.context, datetime.now(UTC))
+        if run.context.sensitivity is not task.sensitivity or set(run.context.categories) != set(
+            task.categories
+        ):
+            raise DomainError("Packed context scope must match the routed data scope.")
+        context_json = run.context.context_json
+        context_sha256 = run.context.context_sha256
+        context_component_sha256s = run.context.component_sha256s
+        data_categories = run.context.categories
     call_id = uuid5(
         run.route_id, f"{policy.policy_version}:{index}:{option.provider_id}:{option.model_alias}"
     )
@@ -150,8 +182,12 @@ def stage_request(
         option.currency,
         routing_policy_version=policy.policy_version,
         data_sensitivity=task.sensitivity,
-        data_categories=task.categories,
+        data_categories=data_categories,
         route_id=run.route_id,
+        context_json=context_json,
+        context_sha256=context_sha256,
+        context_component_sha256s=context_component_sha256s,
+        context_valid_until=run.context.valid_until if run.context else None,
     )
 
 

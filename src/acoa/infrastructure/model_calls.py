@@ -53,6 +53,7 @@ def model_trace_metadata(request: ModelCallRequest, revision: int) -> dict[str, 
         "data_sensitivity": request.data_sensitivity.value,
         "data_categories": [item.value for item in request.data_categories],
         "route_id": request.route_id,
+        "context_valid_until": request.context_valid_until,
         "authority_revision": revision,
     }
 
@@ -144,6 +145,8 @@ class ModelCallRepository:
         if authority.paused:
             return ModelCallTicket(ModelCallState.BLOCKED, reason="user_paused")
         now = cast(datetime, self.connection.execute(text("SELECT clock_timestamp()")).scalar_one())
+        if request.context_valid_until is not None and now >= request.context_valid_until:
+            return ModelCallTicket(ModelCallState.BLOCKED, reason="model_context_stale")
         scope = ModelPermissionStore(self.connection).current(request.provider_id)
         if scope is None or not scope[1].covers(
             request.data_sensitivity, request.data_categories, now

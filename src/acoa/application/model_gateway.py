@@ -13,8 +13,12 @@ from acoa.domain.model_calls import (
     ModelCallLimits,
     ModelCallRequest,
     ModelCallState,
+    ProviderModelInput,
+    ProviderModelResult,
     StructuredModelOutput,
+    bind_provider_result,
     output_matches_request,
+    provider_input,
 )
 from acoa.domain.values import DomainError, require_identifier
 
@@ -38,8 +42,8 @@ class OfflineModelProvider(Protocol):
     """Trusted local simulation only: no network, secrets, tools, SDK retries or permissions."""
 
     def complete(
-        self, request: ModelCallRequest, limits: ModelCallLimits
-    ) -> StructuredModelOutput: ...
+        self, request: ProviderModelInput, limits: ModelCallLimits
+    ) -> ProviderModelResult: ...
 
 
 class ModelCallStore(Protocol):
@@ -61,10 +65,11 @@ def complete_offline(
     try:
         if datetime.now(UTC) >= limits.deadline:
             return None
-        output = provider.complete(request, limits)
-        if not isinstance(output, StructuredModelOutput) or not output_matches_request(
-            request, output
-        ):
+        result = provider.complete(provider_input(request), limits)
+        if not isinstance(result, ProviderModelResult):
+            return None
+        output = bind_provider_result(request, result)
+        if not output_matches_request(request, output):
             return None
         return output
     except Exception:
