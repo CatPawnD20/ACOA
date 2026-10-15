@@ -44,6 +44,11 @@ question without granting update rights to retained audit rows.
 `0015_artifact_versions` adds immutable artifact metadata bound to application, source
 draft, exact byte hash and portable storage key. Consecutive versions retain one
 application and material kind; the application role cannot mutate history.
+`0016_mailbox_sync` adds a mutable, fenced provider cursor plus immutable sync runs and
+provider events. Event insertion and cursor advancement share one transaction, so a
+restart replays provider changes safely without creating a second local event.
+`0017_mailbox_sync_grants` narrows the application role's cursor update privilege to
+the cursor, revision and timestamp columns; account/provider identity remains fixed.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 

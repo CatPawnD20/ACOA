@@ -8,15 +8,30 @@ from typing import Protocol, cast
 
 from acoa.domain.mail import (
     DraftRequest,
+    MailChange,
+    MailChangeKind,
+    MailCursorExpired,
+    MailDelta,
     MailMessageRef,
     MailPage,
     ProviderDraft,
+    require_provider_id,
 )
 from acoa.domain.values import DomainError
 
 GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
 GMAIL_COMPOSE_SCOPE = "https://www.googleapis.com/auth/gmail.compose"
 GMAIL_REQUIRED_SCOPES = frozenset((GMAIL_READONLY_SCOPE, GMAIL_COMPOSE_SCOPE))
+
+
+class GmailTransportError(RuntimeError):
+    """Redacted HTTP failure raised by an authenticated Gmail transport."""
+
+    def __init__(self, status_code: int) -> None:
+        if isinstance(status_code, bool) or not isinstance(status_code, int):
+            raise DomainError("A Gmail transport status must be an integer.")
+        self.status_code = status_code
+        super().__init__(f"Gmail transport failed with HTTP status {status_code}.")
 
 
 class GmailTransport(Protocol):
@@ -44,6 +59,37 @@ def _text(value: object, name: str) -> str:
     if not isinstance(value, str) or not value:
         raise DomainError(f"Gmail returned an invalid {name}.")
     return value
+
+
+def _history_changes(raw_history: object) -> tuple[MailChange, ...]:
+    if not isinstance(raw_history, list):
+        raise DomainError("Gmail returned an invalid history page.")
+    changes: list[MailChange] = []
+    for raw_record in raw_history:
+        if not isinstance(raw_record, Mapping):
+            raise DomainError("Gmail returned an invalid history record.")
+        history_id = _text(raw_record.get("id"), "history ID")
+        additions = raw_record.get("messagesAdded", [])
+        if not isinstance(additions, list):
+            raise DomainError("Gmail returned invalid added-message history.")
+        for addition in additions:
+            if not isinstance(addition, Mapping):
+                raise DomainError("Gmail returned an invalid added-message record.")
+            message = addition.get("message")
+            if not isinstance(message, Mapping):
+                raise DomainError("Gmail returned invalid added-message metadata.")
+            message_ref = MailMessageRef(
+                _text(message.get("id"), "message ID"),
+                _text(message.get("threadId"), "thread ID"),
+            )
+            changes.append(
+                MailChange(
+                    f"{history_id}:message_added:{message_ref.provider_message_id}",
+                    message_ref,
+                    MailChangeKind.MESSAGE_ADDED,
+                )
+            )
+    return tuple(changes)
 
 
 class GmailMailProvider:
@@ -77,6 +123,35 @@ class GmailMailProvider:
             raise DomainError("Gmail returned an invalid message reference.")
         token = response.get("nextPageToken")
         return MailPage(messages, cast(str | None, token))
+
+    def list_changes(self, cursor: str, page_token: str | None, max_results: int) -> MailDelta:
+        require_provider_id(cursor)
+        if (
+            isinstance(max_results, bool)
+            or not isinstance(max_results, int)
+            or not 1 <= max_results <= 500
+        ):
+            raise DomainError("Mail page size must be between one and 500.")
+        query = {
+            "startHistoryId": cursor,
+            "maxResults": str(max_results),
+            "historyTypes": "messageAdded",
+            "labelId": "INBOX",
+        }
+        if page_token is not None:
+            require_provider_id(page_token)
+            query["pageToken"] = page_token
+        try:
+            response = self.transport.request("GET", "/gmail/v1/users/me/history", query, None)
+        except GmailTransportError as error:
+            if error.status_code == 404:
+                raise MailCursorExpired("The Gmail history cursor requires a full sync.") from None
+            raise
+        return MailDelta(
+            _history_changes(response.get("history", [])),
+            _text(response.get("historyId"), "mailbox history ID"),
+            cast(str | None, response.get("nextPageToken")),
+        )
 
     def create_draft(self, request: DraftRequest) -> ProviderDraft:
         if not isinstance(request, DraftRequest):

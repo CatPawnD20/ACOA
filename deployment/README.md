@@ -130,6 +130,11 @@ application role can read and insert these records but cannot update or delete t
 `0015_artifact_versions` adds immutable application-artifact metadata bound to exact
 source drafts, content hashes and portable storage keys. It stores no artifact bytes;
 the application role has read/insert-only access.
+`0016_mailbox_sync` adds a fenced mailbox cursor, immutable sync outcomes and
+provider-event records. Cursor advancement and event insertion commit together; the
+application role cannot update or delete retained event/run history.
+`0017_mailbox_sync_grants` narrows mutable-state updates to the cursor, revision and
+timestamp columns, preventing the application role from rewriting account/provider keys.
 
 EP-05.04 provides a provider-neutral local filesystem adapter and logical artifact
 backup/restore verification. Callers must select a dedicated root explicitly. Storage
