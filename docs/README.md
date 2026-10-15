@@ -50,6 +50,7 @@ G0/S0 in L4 describe the complete EP-00 package, including configuration, deploy
 - [Minimal model context and cache identities](../tasks/EP-03.03-model-context.md)
 - [Hard exclusions and multi-criteria matching](../tasks/EP-03.04-matching.md)
 - [Labeled matching quality and resource evaluation](../tasks/EP-03.05-matching-evaluation.md)
+- [Authorized source discovery and immutable provenance](../tasks/EP-04.01-source-discovery.md)
 - [CI task and verification](../tasks/EP-00.04-ci.md)
 - [Archive index and original checksum records](../archive/legacy-docs/README.md)
 - [Current active-file checksum manifest](../SHA256SUMS.md)

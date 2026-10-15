@@ -1,6 +1,6 @@
 # ACOA — Safe Configuration and Dedicated PostgreSQL
 
-**Autonomous Career Opportunity Agent (ACOA)** is a personal, single-user career-opportunity discovery and authorized initial-application project. EP-00.01/02 provide an installable Python package, safe import checks, development tooling, and validated configuration. EP-00.03 adds a dedicated PostgreSQL Compose deployment. No discovery/application workflow is implemented.
+**Autonomous Career Opportunity Agent (ACOA)** is a personal, single-user career-opportunity discovery and authorized initial-application project. EP-00.01/02 provide an installable Python package, safe import checks, development tooling, and validated configuration. EP-00.03 adds a dedicated PostgreSQL Compose deployment. EP-04.01 adds authorized source-discovery contracts and immutable provenance; no real source adapter or application-submission workflow is configured.
 
 ## Architecture and current limits
 
@@ -143,4 +143,4 @@ Authenticated review ingestion and durable profile history remain later work.
 
 Approved L0–L4 contents were preserved byte-for-byte during workspace preparation. Historical approval statements and filenames inside those documents are explained in [the specification index](docs/README.md).
 
-**Completed scope:** EP-00 bootstrap/infrastructure, EP-01 domain/policy, EP-02 durable execution/reconciliation with local fault verification, and EP-03.01–05 offline Model Gateway, shared budget, bounded routing/quality, minimal context/privacy, evidence-bound matching and labeled evaluation contracts. Policy v2 adds conservative Decimal hard-cap checks. Hosted CI has not run. See the [specification index](docs/README.md) for exact results and trust boundaries. EP-03.05 used synthetic labels only, so production quality and cost thresholds remain unset; real sending and live model integration remain unavailable, notifications are only queued and no real provider is implemented.
+**Completed scope:** EP-00 bootstrap/infrastructure, EP-01 domain/policy, EP-02 durable execution/reconciliation with local fault verification, EP-03.01–05 offline model routing/matching/evaluation, and EP-04.01 authorized source contracts, SSRF/content bounds, canonical source-local identity and immutable PostgreSQL provenance. Policy v2 adds conservative Decimal hard-cap checks. Hosted CI has not run. See the [specification index](docs/README.md) for exact results and trust boundaries. EP-03.05 used synthetic labels only, so production quality and cost thresholds remain unset. EP-04.01 used fake providers only; no live source, browser, model, sending or application provider is configured.

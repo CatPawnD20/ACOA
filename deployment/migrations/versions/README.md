@@ -23,6 +23,10 @@ routes and request/output-bound quality receipts. No provider is enabled by migr
 multi-criteria assessment records. It does not create or approve opportunity data.
 `0009_match_assessment_grants` explicitly grants only application read/insert access;
 it preserves the update/delete prohibition across retained development volumes.
+`0010_source_discovery` adds immutable source policy, discovery batch, source snapshot
+metadata and access-observation records. It stores content digests and bounded
+provenance metadata rather than fetched source bodies, and grants the application
+role only read/insert access.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 

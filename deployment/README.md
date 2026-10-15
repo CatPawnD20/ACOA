@@ -111,6 +111,9 @@ audit. Scopes remain absent until explicitly supplied by a trusted user/config a
 goal, opportunity and policy versions; it does not enable an external action.
 `0009_match_assessment_grants` supplies explicit read/insert-only application access
 for installations whose retained default privileges predate the migration runner.
+`0010_source_discovery` adds immutable source policy, discovery batch, snapshot metadata
+and access-observation records. It stores hashes and provenance metadata rather than
+fetched bodies and preserves read/insert-only application access.
 
 PostgreSQL application adapters use the same explicitly installed tool dependencies.
 Supply a dedicated `acoa_app` SQLAlchemy engine with `hide_parameters=True`,
