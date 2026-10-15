@@ -117,6 +117,9 @@ fetched bodies and preserves read/insert-only application access.
 `0011_opportunity_research` adds evidence-bound organization records, immutable
 opportunity versions, public corporate/professional channel versions and explicit
 contact-research results. Rejected private contact candidates are not persisted.
+`0012_employer_verification` adds immutable, evidence-bound employer risk versions
+and append-only company contact-control events. The application role can read and
+insert them but cannot update or delete verification or opt-out history.
 
 PostgreSQL application adapters use the same explicitly installed tool dependencies.
 Supply a dedicated `acoa_app` SQLAlchemy engine with `hide_parameters=True`,

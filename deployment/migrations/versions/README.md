@@ -30,6 +30,9 @@ role only read/insert access.
 `0011_opportunity_research` adds evidence-bound organizations, immutable opportunity
 versions, versioned public corporate/professional channels and contact-research results.
 Private or inferred contact candidates never enter these tables.
+`0012_employer_verification` adds versioned employer risk decisions bound to sourced
+signals and append-only company-wide contact controls. Suspicious portals cannot become
+trusted policy evidence, and employer opt-out cannot be cleared by a user control event.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 

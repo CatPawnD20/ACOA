@@ -52,6 +52,7 @@ G0/S0 in L4 describe the complete EP-00 package, including configuration, deploy
 - [Labeled matching quality and resource evaluation](../tasks/EP-03.05-matching-evaluation.md)
 - [Authorized source discovery and immutable provenance](../tasks/EP-04.01-source-discovery.md)
 - [Opportunity and corporate contact research](../tasks/EP-04.02-opportunity-contact-research.md)
+- [Risk-based employer verification and company opt-out](../tasks/EP-04.03-employer-verification.md)
 - [CI task and verification](../tasks/EP-00.04-ci.md)
 - [Archive index and original checksum records](../archive/legacy-docs/README.md)
 - [Current active-file checksum manifest](../SHA256SUMS.md)
