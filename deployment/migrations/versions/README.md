@@ -19,6 +19,10 @@ IDs before replacing their FK. `0006_resource_target_guard` explicitly requires
 the selected operation target, avoiding SQL CHECK's nullable equality semantics.
 `0007_model_routing` adds current provider/data scopes, immutable scope versions,
 routes and request/output-bound quality receipts. No provider is enabled by migration.
+`0008_match_assessments` adds immutable, version-bound hard-constraint and
+multi-criteria assessment records. It does not create or approve opportunity data.
+`0009_match_assessment_grants` explicitly grants only application read/insert access;
+it preserves the update/delete prohibition across retained development volumes.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 

@@ -107,6 +107,10 @@ a model provider nor enable live model calls. Accounting timezone and budgets
 remain unset in default authority; tests used only explicit synthetic values.
 `0007_model_routing` adds current provider/data scopes and immutable routing/quality
 audit. Scopes remain absent until explicitly supplied by a trusted user/config adapter.
+`0008_match_assessments` adds immutable matching decisions bound to exact profile,
+goal, opportunity and policy versions; it does not enable an external action.
+`0009_match_assessment_grants` supplies explicit read/insert-only application access
+for installations whose retained default privileges predate the migration runner.
 
 PostgreSQL application adapters use the same explicitly installed tool dependencies.
 Supply a dedicated `acoa_app` SQLAlchemy engine with `hide_parameters=True`,
