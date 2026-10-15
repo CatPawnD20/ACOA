@@ -124,6 +124,9 @@ insert them but cannot update or delete verification or opt-out history.
 decisions and permission-bound source fallback plans. Selected plans retain the exact
 source policy version and access-permit identity; the application role cannot update
 or delete either record family.
+`0014_form_question_handoff` adds immutable unresolved-question requests and approved
+answer evidence bound to the exact application, task and opportunity version. The
+application role can read and insert these records but cannot update or delete them.
 
 PostgreSQL application adapters use the same explicitly installed tool dependencies.
 Supply a dedicated `acoa_app` SQLAlchemy engine with `hide_parameters=True`,

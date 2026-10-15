@@ -37,6 +37,10 @@ trusted policy evidence, and employer opt-out cannot be cleared by a user contro
 and source fallback plans bound to the failed observation, attempted sources, selected
 policy version and current permit. Uncertain matches are retained without canonical
 merging, and the application role cannot mutate decision history.
+`0014_form_question_handoff` adds immutable unresolved-question requests and approved
+answer evidence bound to one application, composition task and opportunity version.
+The application role has read/insert-only access, and answers are serialized per
+question without granting update rights to retained audit rows.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 
