@@ -41,6 +41,9 @@ merging, and the application role cannot mutate decision history.
 answer evidence bound to one application, composition task and opportunity version.
 The application role has read/insert-only access, and answers are serialized per
 question without granting update rights to retained audit rows.
+`0015_artifact_versions` adds immutable artifact metadata bound to application, source
+draft, exact byte hash and portable storage key. Consecutive versions retain one
+application and material kind; the application role cannot mutate history.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 

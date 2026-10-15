@@ -127,6 +127,9 @@ or delete either record family.
 `0014_form_question_handoff` adds immutable unresolved-question requests and approved
 answer evidence bound to the exact application, task and opportunity version. The
 application role can read and insert these records but cannot update or delete them.
+`0015_artifact_versions` adds immutable application-artifact metadata bound to exact
+source drafts, content hashes and portable storage keys. It stores no artifact bytes;
+the application role has read/insert-only access.
 
 PostgreSQL application adapters use the same explicitly installed tool dependencies.
 Supply a dedicated `acoa_app` SQLAlchemy engine with `hide_parameters=True`,
