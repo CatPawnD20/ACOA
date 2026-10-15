@@ -27,6 +27,9 @@ it preserves the update/delete prohibition across retained development volumes.
 metadata and access-observation records. It stores content digests and bounded
 provenance metadata rather than fetched source bodies, and grants the application
 role only read/insert access.
+`0011_opportunity_research` adds evidence-bound organizations, immutable opportunity
+versions, versioned public corporate/professional channels and contact-research results.
+Private or inferred contact candidates never enter these tables.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 
