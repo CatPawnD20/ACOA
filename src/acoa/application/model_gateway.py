@@ -1,7 +1,7 @@
 """EP-03.01 offline structured gateway; all responses remain untrusted model data."""
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from decimal import Decimal
 from time import monotonic_ns
@@ -22,7 +22,7 @@ from acoa.domain.values import DomainError, require_identifier
 @dataclass(frozen=True, slots=True)
 class ModelCallTicket:
     state: ModelCallState
-    execution_token: UUID | None = None
+    execution_token: UUID | None = field(default=None, repr=False)
     limits: ModelCallLimits | None = None
     reason: str | None = None
 

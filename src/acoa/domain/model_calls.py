@@ -7,6 +7,8 @@ from decimal import Decimal
 from enum import StrEnum
 from uuid import UUID
 
+from acoa.domain.authorization import DataCategory
+from acoa.domain.model_privacy import DataSensitivity, validate_data_scope
 from acoa.domain.reviews import content_digest
 from acoa.domain.values import (
     DomainError,
@@ -90,6 +92,10 @@ class ModelCallRequest:
     max_cost: Decimal
     currency: str
     simulation: bool = True
+    routing_policy_version: str | None = None
+    data_sensitivity: DataSensitivity = DataSensitivity.UNKNOWN
+    data_categories: tuple[DataCategory, ...] = ()
+    route_id: UUID | None = None
 
     def __post_init__(self) -> None:
         for identifier in (
@@ -110,28 +116,46 @@ class ModelCallRequest:
         require_currency(self.currency)
         if self.simulation is not True:
             raise DomainError("Live model integration is not available in the offline gateway.")
+        if self.routing_policy_version is not None:
+            require_text(self.routing_policy_version)
+        validate_data_scope(self.data_sensitivity, self.data_categories)
+        if self.route_id is not None:
+            require_identifier(self.route_id)
 
 
 def model_request_sha256(request: ModelCallRequest) -> str:
-    return content_digest(
-        {
-            "call_id": str(request.call_id),
-            "task_id": str(request.task_id),
-            "lease_owner": str(request.lease_owner),
-            "lease_token": str(request.lease_token),
-            "provider_id": str(request.provider_id),
-            "model_alias": request.model_alias,
-            "prompt_version": request.prompt_version,
-            "schema": request.output_schema_version,
-            "prompt": request.prompt,
-            "input_token_limit": request.input_token_limit,
-            "output_token_limit": request.output_token_limit,
-            "timeout": request.timeout_seconds,
-            "max_cost": str(request.max_cost),
-            "currency": request.currency,
-            "simulation": True,
-        }
-    )
+    payload: dict[str, object] = {
+        "call_id": str(request.call_id),
+        "task_id": str(request.task_id),
+        "lease_owner": str(request.lease_owner),
+        "lease_token": str(request.lease_token),
+        "provider_id": str(request.provider_id),
+        "model_alias": request.model_alias,
+        "prompt_version": request.prompt_version,
+        "schema": request.output_schema_version,
+        "prompt": request.prompt,
+        "input_token_limit": request.input_token_limit,
+        "output_token_limit": request.output_token_limit,
+        "timeout": request.timeout_seconds,
+        "max_cost": str(request.max_cost),
+        "currency": request.currency,
+        "simulation": True,
+    }
+    if (
+        request.routing_policy_version is not None
+        or request.data_sensitivity is not DataSensitivity.UNKNOWN
+        or request.data_categories
+        or request.route_id is not None
+    ):
+        payload.update(
+            {
+                "routing_policy_version": request.routing_policy_version,
+                "data_sensitivity": request.data_sensitivity.value,
+                "data_categories": [item.value for item in request.data_categories],
+                "route_id": str(request.route_id) if request.route_id else None,
+            }
+        )
+    return content_digest(payload)
 
 
 @dataclass(frozen=True, slots=True)

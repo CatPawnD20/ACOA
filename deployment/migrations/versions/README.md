@@ -17,6 +17,8 @@ notifications or activate a transport.
 registry for the existing monetary ledger. It backfills existing external budget
 IDs before replacing their FK. `0006_resource_target_guard` explicitly requires
 the selected operation target, avoiding SQL CHECK's nullable equality semantics.
+`0007_model_routing` adds current provider/data scopes, immutable scope versions,
+routes and request/output-bound quality receipts. No provider is enabled by migration.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 

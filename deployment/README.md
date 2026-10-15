@@ -105,6 +105,8 @@ No notification is sent by a migration or reconciliation-store call.
 accounting and shared external/model budget identities. Migrations neither register
 a model provider nor enable live model calls. Accounting timezone and budgets
 remain unset in default authority; tests used only explicit synthetic values.
+`0007_model_routing` adds current provider/data scopes and immutable routing/quality
+audit. Scopes remain absent until explicitly supplied by a trusted user/config adapter.
 
 PostgreSQL application adapters use the same explicitly installed tool dependencies.
 Supply a dedicated `acoa_app` SQLAlchemy engine with `hide_parameters=True`,

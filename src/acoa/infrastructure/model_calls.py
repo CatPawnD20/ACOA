@@ -27,6 +27,7 @@ from acoa.domain.model_calls import (
 )
 from acoa.domain.values import require_version
 from acoa.infrastructure.action_usage import budget_usage
+from acoa.infrastructure.model_permissions import ModelPermissionStore
 from acoa.infrastructure.policy_authority import AuthorityStore, PolicyAuthority
 from acoa.infrastructure.policy_codec import encode_record
 from acoa.infrastructure.postgres import DatabaseBoundaryError, validate_application_connection
@@ -48,6 +49,10 @@ def model_trace_metadata(request: ModelCallRequest, revision: int) -> dict[str, 
         "max_cost": request.max_cost,
         "currency": request.currency,
         "simulation": True,
+        "routing_policy_version": request.routing_policy_version,
+        "data_sensitivity": request.data_sensitivity.value,
+        "data_categories": [item.value for item in request.data_categories],
+        "route_id": request.route_id,
         "authority_revision": revision,
     }
 
@@ -139,11 +144,24 @@ class ModelCallRepository:
         if authority.paused:
             return ModelCallTicket(ModelCallState.BLOCKED, reason="user_paused")
         now = cast(datetime, self.connection.execute(text("SELECT clock_timestamp()")).scalar_one())
+        scope = ModelPermissionStore(self.connection).current(request.provider_id)
+        if scope is None or not scope[1].covers(
+            request.data_sensitivity, request.data_categories, now
+        ):
+            return ModelCallTicket(
+                ModelCallState.BLOCKED, reason="provider_data_scope_not_authorized"
+            )
+        if (
+            request.routing_policy_version is not None
+            and request.routing_policy_version != scope[1].policy_version
+        ):
+            return ModelCallTicket(ModelCallState.BLOCKED, reason="routing_policy_version_changed")
         reason, deadline = self._task_capacity(request, authority, now)
         if reason is None:
             reason = self._money_capacity(request, authority, now)
         if reason is not None or deadline is None:
             return ModelCallTicket(ModelCallState.BLOCKED, reason=reason)
+        deadline = min(deadline, scope[1].expires_at)
         token = uuid4()
         limits = ModelCallLimits(
             deadline,
@@ -152,7 +170,7 @@ class ModelCallRepository:
             request.max_cost,
             request.currency,
         )
-        self._record_start(request, token, limits, revision)
+        self._record_start(request, token, limits, revision, scope[0], scope[1].policy_version)
         return ModelCallTicket(ModelCallState.RUNNING, token, limits)
 
     def _record_start(
@@ -161,8 +179,12 @@ class ModelCallRepository:
         token: UUID,
         limits: ModelCallLimits,
         revision: int,
+        provider_revision: int,
+        provider_policy_version: str,
     ) -> None:
         metadata = model_trace_metadata(request, revision)
+        metadata["provider_permission_revision"] = provider_revision
+        metadata["provider_policy_version"] = provider_policy_version
         self.connection.execute(
             text("""INSERT INTO acoa.model_calls
             (call_id,task_id,request_sha256,metadata,state,execution_token,
@@ -216,14 +238,20 @@ class ModelCallRepository:
         require_amount(elapsed_seconds)
         row = self._lock_call(request, token)
         state = ModelCallState(row["state"])
-        if state is not ModelCallState.RUNNING:
+        if state not in (ModelCallState.RUNNING, ModelCallState.UNKNOWN):
             return state
         if not isinstance(output, StructuredModelOutput) or not output_matches_request(
             request, output
         ):
-            self._mark_unknown(request.call_id)
+            if state is ModelCallState.RUNNING:
+                self._mark_unknown(request.call_id)
             return ModelCallState.UNKNOWN
-        exceeded = output_exceeds_limits(request, output, elapsed_seconds)
+        now: datetime = self.connection.execute(text("SELECT clock_timestamp()")).scalar_one()
+        exceeded = (
+            state is ModelCallState.UNKNOWN
+            or now >= row["deadline"]
+            or output_exceeds_limits(request, output, elapsed_seconds)
+        )
         if exceeded:
             self._record_violation(request.call_id)
         return self._record_output(request, output, elapsed_seconds, exceeded)
