@@ -33,6 +33,10 @@ Private or inferred contact candidates never enter these tables.
 `0012_employer_verification` adds versioned employer risk decisions bound to sourced
 signals and append-only company-wide contact controls. Suspicious portals cannot become
 trusted policy evidence, and employer opt-out cannot be cleared by a user control event.
+`0013_cross_source_resolution` adds immutable exact/possible/distinct entity decisions
+and source fallback plans bound to the failed observation, attempted sources, selected
+policy version and current permit. Uncertain matches are retained without canonical
+merging, and the application role cannot mutate decision history.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 
