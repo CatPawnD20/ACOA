@@ -49,6 +49,7 @@ from acoa.infrastructure.postgres import (
     require_transaction,
     validate_application_connection,
 )
+from acoa.infrastructure.resource_budget import register_resource_attempt
 
 
 def decode_prepared(value: object) -> PreparedAction:
@@ -293,6 +294,7 @@ class ActionProtocol:
 
     def _hold_budget(self, attempt_id: UUID, context: PolicyContext) -> None:
         """Create or refresh this attempt's exact quoted hold under the global authority lock."""
+        register_resource_attempt(self.connection, attempt_id, "external")
         self.connection.execute(
             text("""INSERT INTO acoa.budget_ledger
             (attempt_id, currency, estimated, reserved) VALUES (:id, :currency, :cost, :cost)

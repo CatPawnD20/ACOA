@@ -21,8 +21,9 @@ from acoa.domain.authorization import (
     grant_is_active,
     sensitive_consent_covers,
 )
+from acoa.domain.budgets import LimitCheck, check_decimal_limit
 
-POLICY_VERSION = "acoa-policy/1"
+POLICY_VERSION = "acoa-policy/2"
 EXTERNAL_ACTIONS = frozenset(
     (
         ActionKind.SUBMIT_INITIAL_APPLICATION,
@@ -93,6 +94,7 @@ class ReasonCode(StrEnum):
     QUOTA_EXHAUSTED = "quota_exhausted"
     BUDGET_UNKNOWN = "budget_unknown"
     BUDGET_EXCEEDED = "budget_exceeded"
+    BUDGET_PRECISION_UNKNOWN = "budget_precision_unknown"
     ARTIFACT_UNVERIFIED = "artifact_unverified"
     PROFILE_NOT_CURRENT = "profile_not_current"
     PERSONAL_ANSWER_REQUIRED = "personal_answer_required"
@@ -252,7 +254,10 @@ def check_budget(context: PolicyContext) -> ReasonCode | None:
     ):
         if spent is None or money_cap is None:
             return ReasonCode.BUDGET_UNKNOWN
-        if spent + usage.estimated_cost > money_cap:
+        outcome = check_decimal_limit(spent, usage.estimated_cost, money_cap)
+        if outcome is LimitCheck.INDETERMINATE:
+            return ReasonCode.BUDGET_PRECISION_UNKNOWN
+        if outcome is LimitCheck.EXCEEDED:
             return ReasonCode.BUDGET_EXCEEDED
     for estimate, cap in (
         (usage.estimated_tokens, caps.max_tokens_per_task),
@@ -364,6 +369,7 @@ def failure_decision(reason: ReasonCode) -> GateDecision:
         ReasonCode.GRANT_NOT_CURRENT,
         ReasonCode.QUOTA_UNKNOWN,
         ReasonCode.BUDGET_UNKNOWN,
+        ReasonCode.BUDGET_PRECISION_UNKNOWN,
         ReasonCode.POLICY_VERSION_MISMATCH,
     ):
         return GateDecision.RECHECK

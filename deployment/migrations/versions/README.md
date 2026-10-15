@@ -13,6 +13,10 @@ policy decisions. Provider acknowledgement is not submission verification.
 `0004_reconciliation` adds immutable submission evidence, reconciliation events,
 deduplicated review incidents and an outbox. Outbox insertion does not deliver
 notifications or activate a transport.
+`0005_model_gateway` adds offline model-call accounting and a shared operation
+registry for the existing monetary ledger. It backfills existing external budget
+IDs before replacing their FK. `0006_resource_target_guard` explicitly requires
+the selected operation target, avoiding SQL CHECK's nullable equality semantics.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 

@@ -101,6 +101,10 @@ dry-run with external actions disabled and no grant. Migrations do not activate
 providers, authenticate user permission or start an executor worker.
 `0004_reconciliation` adds immutable submission proof and a pending review outbox.
 No notification is sent by a migration or reconciliation-store call.
+`0005_model_gateway` and `0006_resource_target_guard` add simulated model-call
+accounting and shared external/model budget identities. Migrations neither register
+a model provider nor enable live model calls. Accounting timezone and budgets
+remain unset in default authority; tests used only explicit synthetic values.
 
 PostgreSQL application adapters use the same explicitly installed tool dependencies.
 Supply a dedicated `acoa_app` SQLAlchemy engine with `hide_parameters=True`,
