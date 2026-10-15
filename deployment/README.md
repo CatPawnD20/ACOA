@@ -131,6 +131,13 @@ application role can read and insert these records but cannot update or delete t
 source drafts, content hashes and portable storage keys. It stores no artifact bytes;
 the application role has read/insert-only access.
 
+EP-05.04 provides a provider-neutral local filesystem adapter and logical artifact
+backup/restore verification. Callers must select a dedicated root explicitly. Storage
+keys cannot escape it and immutable files are never overwritten. Application artifacts
+are retained as application history; no invented TTL or automatic deletion is applied.
+This does not replace the crash-consistent database plus artifact-volume recovery
+exercise required by EP-10.02.
+
 PostgreSQL application adapters use the same explicitly installed tool dependencies.
 Supply a dedicated `acoa_app` SQLAlchemy engine with `hide_parameters=True`,
 `echo=False` and a bounded connection timeout. Queue/ledger/protocol operations

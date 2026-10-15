@@ -57,6 +57,7 @@ G0/S0 in L4 describe the complete EP-00 package, including configuration, deploy
 - [Verified profile composition](../tasks/EP-05.01-verified-composition.md)
 - [Application-specific form-question handoff](../tasks/EP-05.02-form-question-handoff.md)
 - [Immutable artifact versioning and storage binding](../tasks/EP-05.03-artifact-versioning.md)
+- [Artifact privacy, retention and recovery](../tasks/EP-05.04-artifact-lifecycle.md)
 - [CI task and verification](../tasks/EP-00.04-ci.md)
 - [Archive index and original checksum records](../archive/legacy-docs/README.md)
 - [Current active-file checksum manifest](../SHA256SUMS.md)
