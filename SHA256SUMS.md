@@ -1,6 +1,6 @@
 # ACOA current active-file integrity manifest
 
-Calculated on 2026-10-15 after EP-04.04 cross-source resolution verification.
+Calculated on 2026-10-15 after EP-05.01 verified profile composition verification.
 Scope: active root, docs, tasks, src, tests, deployment and .github files.
 Excludes archived originals, this manifest, ignored secrets, environments and caches.
 The original workspace baseline remains preserved in archive/legacy-docs/SHA256SUMS.original-workspace.md.
@@ -42,12 +42,13 @@ df45ebd5b44da9ffcfe11c97b0fe4fffe260677481c70c0a0f124bdfcb9d969d  docs/L1-capabi
 15b991c2c362085694fed82d493c504929b5922bc7341ac53ae60fc7b89851e1  docs/L2-requirements-approved.md
 5072ad7d037fbbd0cf1d41e43d05f9cfcd565ed55e9b9c97e2997f29e3579c4f  docs/L3-architecture-approved.md
 7af2b0aec9933ec0ccf81cbf818759e0558980251f1fe770027da05e8f38b0fc  docs/L4-implementation-plan.md
-3937d09fb014976796c67c1d6b2f7c3cd8ce2b879b680fc7e0f8be239e264428  docs/README.md
+78182af552fb8e630550d1fa73f3dd696a6ff3ce13a9dadc1847d7dc92a2b574  docs/README.md
 6cd46f98085099bf7a0b9a3d7aaa1a18800c8283c724bfe0651269fc4eb87a0f  docs/workspace-audit.md
 1760cbaa9181faf297de97c29dd6431e1d48c6a2929b825a40ff0a308afb25d6  pyproject.toml
-6685218ea501204bc7ab1d6fe15529c8fcf819dd9c914cff0b1eec1b33a192ca  README.md
+3d84f9a63d3b1128ccc2fbe92d18bc7a82dfab5a6e810b2c45b3295071c1bfda  README.md
 aab65353362d0a5ba62427a44ec866a6c86c2de4b552e6a7895099b2f41a771d  src/acoa/__init__.py
 e9d6492f4ae56d69a793767c0de5f7e3c7c8ff8b968d3b7a120bf02a10eff356  src/acoa/application/__init__.py
+eee65d1f4fffacfcb02c8f38a2645bca8055d36ec252d8f7ca0c63fe4e2648ed  src/acoa/application/composition.py
 0f5f8b8ffc246b222d4bd42d7091206d160e5c20d9e4601bc10b11178fab6199  src/acoa/application/context_packing.py
 69d06d657ca02999693d2ae9bcd1e424100e955551f78b6500d12712b0abac38  src/acoa/application/decision_records.py
 886f0aecbb1256e550d61c7bdc65f0d1f07bcc5021bfd24b46a44ae2abe3efb7  src/acoa/application/deduplication.py
@@ -70,6 +71,7 @@ af92192ec4059395182bb7232ea9675dd85cb74841a3dadf57e7e3e6d0c99194  src/acoa/domai
 7744d94e1c2a8e78ea058a7a062f6fe478d23988efa920110156f55fc47db180  src/acoa/domain/applications.py
 a7bbed24a9244298ae080fac059680f9253de79be8b96dc3617917f9964ccba9  src/acoa/domain/authorization.py
 da5090e9a7d176426e6451b170f6e30b071ae66b737caf893d3e538fcfed568a  src/acoa/domain/budgets.py
+34898135e89b67d3b6073f7b4aa3956e47c069f012f65e8befbdc8d32fdb338f  src/acoa/domain/composition.py
 971e07be5dc7d25517010de32394c25329b6503a71fd8055c4f8f6ea6fd8c459  src/acoa/domain/deduplication.py
 169f9e908d36f3a49a0aa04f46deca98d3afec8ff3e64f6b6eb60537354c63cb  src/acoa/domain/discovery.py
 9ea0d1a246982b1615bfaf722328ded029915f5fbb0631eb0fd92d3d22358345  src/acoa/domain/evaluation.py
@@ -133,5 +135,6 @@ a35881fa3563b505cf8e669fcb069d1e50fb561b7aa6aeec11c7258c877d8d60  tasks/EP-03.05
 1c3c685484576c757c1610961a68e98a54bcaf624ac19c428bbb3ec6dbe4adf0  tasks/EP-04.02-opportunity-contact-research.md
 3acdb1059497b9ba25a3b8bd2c4127ab8ee5c8cc709e3ca81c24150c9330eee7  tasks/EP-04.03-employer-verification.md
 d8155dcd1557892158a713e3f6e222ba2cfb12a6235a380615e3dad07795e530  tasks/EP-04.04-cross-source-resolution.md
+a94fd42f614c8f91e4d43c1ac0e877a4a2b3cb3200f4f7270e2263509e5e8b34  tasks/EP-05.01-verified-composition.md
 5229ff396803f9cf0acd617b881df74908e60c7ebac4a4089bc59a8d16e53752  tests/test_config.py
 32485ef75d6723fb4e72e7ec9342c19f4c9803292d9cafe714b0e4102fd4d68f  tests/test_package_smoke.py
