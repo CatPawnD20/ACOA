@@ -1,0 +1,26 @@
+{
+  "schema": "acoa-portable-images/1",
+  "source_set_sha256": "ae77a6b3bf6dc4c751e5c4eda6cebdeb6639dd5084f06b7411ede41d0f5a65ee",
+  "images": {
+    "postgres": {
+      "reference": "postgres:18.6-trixie@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336",
+      "image_id": "sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336",
+      "platform": "linux/amd64"
+    },
+    "migration": {
+      "reference": "acoa-dev-acoa-migrate:latest",
+      "image_id": "sha256:bcfafdf4a9b28d36b783d6ee25b7d6a8c31f89d815d2dc8a3b100871cecc77f9",
+      "platform": "linux/amd64"
+    },
+    "browser": {
+      "reference": "acoa-dev-acoa-browser-worker:latest",
+      "image_id": "sha256:81dbfb78883364075ff1d6ba03c6bbf99b2e07cd3b0aca851ede0babde5bd6bc",
+      "platform": "linux/amd64"
+    },
+    "sandbox": {
+      "reference": "acoa-dev-acoa-sandbox-worker:latest",
+      "image_id": "sha256:7ff8f70143b4b20c0a157e5f340c90c320f989d7f3fd96de2e21671926369950",
+      "platform": "linux/amd64"
+    }
+  }
+}

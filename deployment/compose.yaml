@@ -29,9 +29,7 @@ services:
 
   acoa-migrate:
     profiles: [maintenance]
-    build:
-      context: .
-      dockerfile: migration.Dockerfile
+    image: ${ACOA_MIGRATION_IMAGE:-acoa-dev-acoa-migrate:latest}
     entrypoint:
       - python
       - migrate.py
@@ -59,9 +57,7 @@ services:
 
   acoa-browser-worker:
     profiles: [browser]
-    build:
-      context: ..
-      dockerfile: deployment/browser.Dockerfile
+    image: ${ACOA_BROWSER_IMAGE:-acoa-dev-acoa-browser-worker:latest}
     command: [self-check]
     init: true
     network_mode: none
@@ -80,9 +76,7 @@ services:
 
   acoa-sandbox-worker:
     profiles: [sandbox]
-    build:
-      context: ..
-      dockerfile: deployment/sandbox.Dockerfile
+    image: ${ACOA_SANDBOX_IMAGE:-acoa-dev-acoa-sandbox-worker:latest}
     command: [self-check]
     init: true
     network_mode: none

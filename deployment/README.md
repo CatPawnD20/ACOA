@@ -198,10 +198,12 @@ non-root identity, read-only root, ephemeral no-exec temporary filesystems, drop
 capabilities, no-new-privileges and explicit CPU, memory, PID and shared-memory bounds.
 Starting this profile does not authorize or perform a web interaction.
 
-Build and verify the fail-closed worker independently of PostgreSQL:
+Build and verify the fail-closed worker independently of PostgreSQL. The build overlay is
+used only to create the locked local image; normal execution resolves the image reference
+from the base Compose file:
 
 ```powershell
-docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml --profile browser build acoa-browser-worker
+docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml -f deployment/compose.build.yaml --profile browser build acoa-browser-worker
 docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml --profile browser run --rm --no-deps acoa-browser-worker self-check
 ```
 
@@ -220,7 +222,7 @@ read-only root plus bounded no-exec tmpfs, CPU, memory and PID resources.
 Build and verify it independently:
 
 ```powershell
-docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml --profile sandbox build acoa-sandbox-worker
+docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml -f deployment/compose.build.yaml --profile sandbox build acoa-sandbox-worker
 docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml --profile sandbox run --rm --no-deps acoa-sandbox-worker self-check
 ```
 
@@ -240,7 +242,7 @@ External Action Executor.
 Use the one-shot maintenance container to keep the database port unpublished:
 
 ```powershell
-docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml build acoa-migrate
+docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml -f deployment/compose.build.yaml build acoa-migrate
 docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml run --rm --no-deps acoa-migrate current
 docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml run --rm --no-deps acoa-migrate upgrade
 ```
@@ -255,6 +257,47 @@ temporary `/tmp`, no capabilities and no-new-privileges. The container is remove
 when its command exits. The image can be transferred to another Docker host with
 the corresponding dedicated PostgreSQL deployment and secret provisioning.
 No cloud deployment was performed.
+
+## Portable image set and single-active cutover
+
+EP-10.01 separates local builds from normal Compose execution. `compose.yaml` names every
+runtime image, while `compose.build.yaml` contains the three project build definitions.
+The base file therefore runs the same selected images on local Docker and a compatible
+VPS/VM Docker host. `images.lock.json` binds the active source set to the exact Linux image
+IDs and platforms verified for PostgreSQL, migration, browser and sandbox services.
+
+After a local build, verify the checked-out source files and installed images together:
+
+```powershell
+& .\.venv\Scripts\python.exe deployment/verify_image_set.py
+```
+
+The verifier checks every active-file checksum before hashing the source set, then uses
+read-only Docker image inspection to compare each image ID and platform with the lock. It
+prints only the source-set and image-set SHA-256 values. A different source file, missing
+image, rebuilt layer or target architecture fails closed. Update the committed lock only
+after all images have been deliberately rebuilt and exercised for the same source set.
+
+A future local-to-VPS cutover must use this order:
+
+1. Record the verified source-set/image-set hashes and migration head. Export the four
+   locked images or make those exact content identities available to the target host.
+2. Enter safe mode and stop every source deployment service. Confirm Compose reports no
+   running API, scheduler, worker, browser or sandbox process. Do not start the target yet.
+3. Use the EP-10.02 procedure to take and verify one consistent PostgreSQL plus artifact
+   recovery point. Provision target secrets independently; never place them in the image
+   archive, source archive or Git repository.
+4. Restore only into a new isolated ACOA deployment. Verify database identity, role/schema
+   ownership, migration head, artifact hashes and the locked source/image set.
+5. Start the target once and confirm health before scheduling work. Keep the source stopped.
+   Record which environment is authoritative.
+
+If target verification fails, keep it stopped. Resume the source only after confirming the
+target performed no work and selecting the source data as authoritative. Never start both
+environments to compare them. Docker tags alone are insufficient evidence; compare image
+IDs and the lock. The current repository has no continuously running main API/worker image,
+so this lock covers the four images that exist today. EP-10.03 owns service health and
+graceful shutdown; EP-10.02 owns the recovery implementation required before real cutover.
 
 For host execution, explicitly install the tools and use the local port overlay:
 

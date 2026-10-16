@@ -1,0 +1,16 @@
+# Local image build overlay. Production-style hosts use compose.yaml with verified images.
+services:
+  acoa-migrate:
+    build:
+      context: .
+      dockerfile: migration.Dockerfile
+
+  acoa-browser-worker:
+    build:
+      context: ..
+      dockerfile: deployment/browser.Dockerfile
+
+  acoa-sandbox-worker:
+    build:
+      context: ..
+      dockerfile: deployment/sandbox.Dockerfile
