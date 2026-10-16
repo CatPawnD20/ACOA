@@ -150,6 +150,9 @@ application, provider and external-action attempt identities. It stores login an
 provider-account hashes plus an opaque secret reference, never a login value or
 password. Account creation remains unavailable without an explicitly injected secret
 store and trusted provider adapter registered with the central executor.
+`0023_strategy_experiments` adds immutable, scope-bound experiment plans and append-only
+checkpoints. It does not enable live rollout; the approved real external-impact ceiling
+remains unresolved, so current plans must remain replay-only with zero external impact.
 
 EP-05.04 provides a provider-neutral local filesystem adapter and logical artifact
 backup/restore verification. Callers must select a dedicated root explicitly. Storage

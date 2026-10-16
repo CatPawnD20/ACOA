@@ -62,6 +62,8 @@ dashboard control events. Active leases cannot be paused through this transition
 append-only outcome per external-action attempt. It stores only login/provider hashes
 and an opaque unique secret reference; plaintext login values and passwords remain in
 the separately injected material and secret stores.
+`0023_strategy_experiments` adds immutable experiment plans and append-only checkpoints
+with explicit cohort, strategy, case, external-impact, cost and rollback bindings.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 
