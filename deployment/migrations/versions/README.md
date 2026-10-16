@@ -64,6 +64,8 @@ and an opaque unique secret reference; plaintext login values and passwords rema
 the separately injected material and secret stores.
 `0023_strategy_experiments` adds immutable experiment plans and append-only checkpoints
 with explicit cohort, strategy, case, external-impact, cost and rollback bindings.
+`0024_experiment_comparisons` adds immutable fixed-scope baseline/candidate comparisons
+and one append-only reversible strategy-selection record per comparison.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 

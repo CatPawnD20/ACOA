@@ -153,6 +153,9 @@ store and trusted provider adapter registered with the central executor.
 `0023_strategy_experiments` adds immutable, scope-bound experiment plans and append-only
 checkpoints. It does not enable live rollout; the approved real external-impact ceiling
 remains unresolved, so current plans must remain replay-only with zero external impact.
+`0024_experiment_comparisons` records same-dataset baseline/candidate results and
+reversible strategy selections. A selection is audit evidence only; it does not enable
+live rollout or mutate the active production strategy.
 
 EP-05.04 provides a provider-neutral local filesystem adapter and logical artifact
 backup/restore verification. Callers must select a dedicated root explicitly. Storage
