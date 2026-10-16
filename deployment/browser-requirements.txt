@@ -1,0 +1,2 @@
+# EP-08.02; pinned separately from the main process because browsers run in isolation.
+playwright==1.64.0

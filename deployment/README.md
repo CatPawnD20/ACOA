@@ -172,6 +172,28 @@ stored UUIDs with short SHA-256 correlation labels; it never reads audit JSON pa
 actor digests, evidence identifiers or provider message identifiers. Important mail
 notifications and closed daily mail reports are displayed from their scalar summaries.
 
+EP-08.02 adds a separately pinned Playwright browser image under the optional `browser`
+profile. Its default command is a one-shot self-check with networking disabled, no
+database network, secret, persistent volume or host file mount. The image build context
+contains only the isolated worker entry point and package markers. The container uses a
+non-root identity, read-only root, ephemeral no-exec temporary filesystems, dropped
+capabilities, no-new-privileges and explicit CPU, memory, PID and shared-memory bounds.
+Starting this profile does not authorize or perform a web interaction.
+
+Build and verify the fail-closed worker independently of PostgreSQL:
+
+```powershell
+docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml --profile browser build acoa-browser-worker
+docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml --profile browser run --rm --no-deps acoa-browser-worker self-check
+```
+
+Successful output reports non-root execution, no default network route, a read-only
+root, absent secrets, the pinned Playwright version and a local headless Chromium
+render. Public browser egress remains unconfigured. A later concrete adapter must bind
+every request and redirect to the task permit and public DNS guard before a controlled
+network is attached; external submission still belongs exclusively to the central
+Policy Gate and External Action Executor.
+
 Use the one-shot maintenance container to keep the database port unpublished:
 
 ```powershell
