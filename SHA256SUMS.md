@@ -1,6 +1,6 @@
 # ACOA current active-file integrity manifest
 
-Calculated on 2026-10-16 after EP-07.03 dashboard-reporting verification.
+Calculated on 2026-10-16 after EP-08.01 browser-contract verification.
 Scope: active root, docs, tasks, src, tests, deployment and .github files.
 Excludes archived originals, this manifest, ignored secrets, environments and caches.
 The original workspace baseline remains preserved in archive/legacy-docs/SHA256SUMS.original-workspace.md.
@@ -59,6 +59,7 @@ aab65353362d0a5ba62427a44ec866a6c86c2de4b552e6a7895099b2f41a771d  src/acoa/__ini
 e9d6492f4ae56d69a793767c0de5f7e3c7c8ff8b968d3b7a120bf02a10eff356  src/acoa/application/__init__.py
 2e3d72725729e654331236340153df8ea59f3c55f7d8682c3a23b5c6f1ad9258  src/acoa/application/artifact_backup.py
 cd1e76ba335c44b2eaf0f4aca08f0d05acf9a20bec19e3792531f720da89afce  src/acoa/application/artifacts.py
+17aaf8581ce5b1abb030bc3085267b8692793e7b3b76584163469cdb247afd30  src/acoa/application/browser_workflow.py
 eee65d1f4fffacfcb02c8f38a2645bca8055d36ec252d8f7ca0c63fe4e2648ed  src/acoa/application/composition.py
 0f5f8b8ffc246b222d4bd42d7091206d160e5c20d9e4601bc10b11178fab6199  src/acoa/application/context_packing.py
 60f4033ce7c5822815b5f0d65939bcfaee2dfb24147d3589d21a180b9caf9dfd  src/acoa/application/dashboard.py
@@ -90,6 +91,7 @@ af92192ec4059395182bb7232ea9675dd85cb74841a3dadf57e7e3e6d0c99194  src/acoa/domai
 cdc9e28fefd9ac56f712e5dede3ba6bea1d804b54dc1415ef314bcf82744d66b  src/acoa/domain/artifact_lifecycle.py
 ad3a970a3780b7a535db27cc754e4919dcc419f7066fd4dc8cf864a529a0c584  src/acoa/domain/artifacts.py
 a7bbed24a9244298ae080fac059680f9253de79be8b96dc3617917f9964ccba9  src/acoa/domain/authorization.py
+f6579059661841b78d365db469af69dcf4413dbecb488ddef71c95235548a78d  src/acoa/domain/browser.py
 da5090e9a7d176426e6451b170f6e30b071ae66b737caf893d3e538fcfed568a  src/acoa/domain/budgets.py
 34898135e89b67d3b6073f7b4aa3956e47c069f012f65e8befbdc8d32fdb338f  src/acoa/domain/composition.py
 971e07be5dc7d25517010de32394c25329b6503a71fd8055c4f8f6ea6fd8c459  src/acoa/domain/deduplication.py
@@ -188,5 +190,6 @@ d28bc4a3a6a68476f0850606131e0f4e79e9ba4d305474a69f9fafcbc2323939  tasks/EP-06.05
 65085835a98297524593e8873d17beda0c87618828b94e194dddc7d929b95c83  tasks/EP-07.01-dashboard.md
 f18767d4c1a990b6e984f7d8fbb22775f2f45148369a29bf837ed88c2be8417d  tasks/EP-07.02-dashboard-controls.md
 30828bd302fdeade3fc16d221337e243c05e049c1f3d5adcd0676f8833e171e5  tasks/EP-07.03-dashboard-reporting.md
+005a7038516512b9b05f8a3cd8d681521680d3d4455658b2f0bbff40910fb6f6  tasks/EP-08.01-browser-contract.md
 5229ff396803f9cf0acd617b881df74908e60c7ebac4a4089bc59a8d16e53752  tests/test_config.py
 32485ef75d6723fb4e72e7ec9342c19f4c9803292d9cafe714b0e4102fd4d68f  tests/test_package_smoke.py
