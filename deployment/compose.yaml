@@ -78,6 +78,26 @@ services:
     cpus: 1
     stop_grace_period: 10s
 
+  acoa-sandbox-worker:
+    profiles: [sandbox]
+    build:
+      context: ..
+      dockerfile: deployment/sandbox.Dockerfile
+    command: [self-check]
+    init: true
+    network_mode: none
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m,uid=10002,gid=10002
+      - /home/acoa-sandbox:rw,noexec,nosuid,size=16m,uid=10002,gid=10002
+    user: "10002:10002"
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 16
+    mem_limit: 128m
+    cpus: 0.5
+    stop_grace_period: 3s
+
 networks:
   database:
     internal: true

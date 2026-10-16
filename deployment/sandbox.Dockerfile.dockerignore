@@ -1,0 +1,13 @@
+**
+!deployment/
+deployment/**
+!deployment/sandbox.Dockerfile
+!src/
+src/**
+!src/acoa/
+src/acoa/**
+!src/acoa/__init__.py
+!src/acoa/infrastructure/
+src/acoa/infrastructure/**
+!src/acoa/infrastructure/__init__.py
+!src/acoa/infrastructure/sandbox_worker.py

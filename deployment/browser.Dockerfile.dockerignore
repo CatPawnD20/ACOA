@@ -1,0 +1,14 @@
+**
+!deployment/
+deployment/**
+!deployment/browser.Dockerfile
+!deployment/browser-requirements.txt
+!src/
+src/**
+!src/acoa/
+src/acoa/**
+!src/acoa/__init__.py
+!src/acoa/infrastructure/
+src/acoa/infrastructure/**
+!src/acoa/infrastructure/__init__.py
+!src/acoa/infrastructure/browser_worker.py

@@ -1,9 +1,10 @@
-# Allow only the isolated browser image inputs; private data and Git metadata stay outside.
+# Allow only isolated worker image inputs; private data and Git metadata stay outside.
 **
 !deployment/
 deployment/**
 !deployment/browser.Dockerfile
 !deployment/browser-requirements.txt
+!deployment/sandbox.Dockerfile
 !src/
 src/**
 !src/acoa/
@@ -13,3 +14,4 @@ src/acoa/**
 src/acoa/infrastructure/**
 !src/acoa/infrastructure/__init__.py
 !src/acoa/infrastructure/browser_worker.py
+!src/acoa/infrastructure/sandbox_worker.py

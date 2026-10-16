@@ -207,6 +207,24 @@ every request and redirect to the task permit and public DNS guard before a cont
 network is attached; external submission still belongs exclusively to the central
 Policy Gate and External Action Executor.
 
+EP-09.03 adds a separate dependency-free generated-tool sandbox under the optional
+`sandbox` profile. Its image contains only the worker entry point. It starts as UID/GID
+10002 with no network, database network, secrets or persistent mounts, and uses a
+read-only root plus bounded no-exec tmpfs, CPU, memory and PID resources.
+
+Build and verify it independently:
+
+```powershell
+docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml --profile sandbox build acoa-sandbox-worker
+docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml --profile sandbox run --rm --no-deps acoa-sandbox-worker self-check
+```
+
+The `run` command accepts one bounded `acoa-generated-tool/1` JSON request on stdin.
+Generated source may define only `transform(payload)`, cannot import modules, and runs
+in a separate isolated Python child with a small safe builtin set. Output must be one
+bounded JSON object. The worker exposes no external-action, database or installation
+interface.
+
 Use the one-shot maintenance container to keep the database port unpublished:
 
 ```powershell
