@@ -92,12 +92,43 @@ services:
     cpus: 0.5
     stop_grace_period: 3s
 
+  acoa-recovery:
+    profiles: [recovery]
+    image: postgres:18.6-trixie@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336
+    entrypoint: [/opt/acoa-recovery/recovery.sh]
+    command: [help]
+    depends_on:
+      acoa-postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: acoa-postgres
+      PGPORT: "5432"
+      PGDATABASE: acoa
+      PGUSER: acoa_migrator
+    secrets:
+      - postgres_migration_password
+    volumes:
+      - artifact-data:/artifacts
+      - ${ACOA_RECOVERY_DIR:-./backups}:/backups
+      - ./recovery/recovery.sh:/opt/acoa-recovery/recovery.sh:ro
+    networks:
+      - database
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=256m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    mem_limit: 512m
+    cpus: 1
+
 networks:
   database:
     internal: true
 
 volumes:
   postgres-data:
+  artifact-data:
 
 secrets:
   postgres_admin_password:

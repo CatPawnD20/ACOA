@@ -330,14 +330,41 @@ Stopping or recreating this container preserves its named volume. `down` also
 preserves the volume unless `--volumes` is supplied. Do not use volume deletion,
 Docker prune, factory reset, or automatic fresh-volume recovery on retained data.
 
-Backups belong only to this dedicated service. Use `pg_dump` in custom format for
-the `acoa` database and retain the image digest, schema/migration version, and
-secret provisioning/role inventory separately in protected storage. Restore into
-a new isolated ACOA deployment with the same role names, verify ownership, grants,
-data and artifact integrity, then deliberately switch the single active deployment.
-Never restore into an unrelated project's database or an existing active database
-as part of a routine development check. Backup/restore automation and a recovery
-exercise are not implemented in EP-00.03.
+Backups belong only to this dedicated service. EP-10.02 adds the optional `recovery`
+profile and dedicated `artifact-data` volume. Before backup, enter safe mode and stop all
+API, scheduler, worker, browser and sandbox processes; only PostgreSQL may remain active.
+Choose a protected absolute output directory outside Git and a new safe backup ID:
+
+```powershell
+$env:ACOA_RECOVERY_DIR = 'D:\protected\acoa-backups'
+docker compose --env-file deployment/compose.env.example -p acoa-dev -f deployment/compose.yaml --profile recovery run --rm acoa-recovery backup 2026-10-17T120000Z
+```
+
+The one-shot container first checks every deployed artifact against PostgreSQL metadata.
+It then creates a custom-format dump of only `acoa` and `acoa_migrations`, archives the
+artifact volume, records the migration head and verifies SHA-256 for the dump, archive and
+metadata. It never copies password files into the bundle. Backup IDs are create-only.
+
+Restore only into a newly initialized, isolated ACOA project whose application schemas
+contain zero tables and whose artifact volume is empty. The target must use the expected
+roles and independently provisioned secrets:
+
+```powershell
+$env:ACOA_RECOVERY_DIR = 'D:\protected\acoa-backups'
+docker compose --env-file deployment/compose.env.example -p acoa-restore -f deployment/compose.yaml up -d --wait --wait-timeout 90 acoa-postgres
+docker compose --env-file deployment/compose.env.example -p acoa-restore -f deployment/compose.yaml --profile recovery run --rm acoa-recovery restore 2026-10-17T120000Z
+```
+
+Restore preserves the initializer-created, migration-owned schemas, restores all objects,
+data and ACLs, reapplies future default grants, checks the exact migration head and verifies
+every artifact file count, size and SHA-256 against restored metadata. Any mismatch fails
+the target. Keep the source stopped until target health and authority are deliberately
+confirmed under the EP-10.01 cutover procedure.
+
+Recovery bundles contain personal application data even though they contain no secret
+files. Store them with restricted access and encryption appropriate to the destination.
+The committed configuration supplies neither remote storage nor encryption/key management.
+Never restore into an unrelated project or a deployment that has started application work.
 
 ## Verified behavior and limits
 

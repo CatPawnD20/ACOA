@@ -39,6 +39,7 @@ token.*.json
 /browser-profiles/
 /deployment/volumes/
 /deployment/postgres-data/
+/deployment/backups/
 /postgres-data/
 
 # Local diagnostic output and editor state.

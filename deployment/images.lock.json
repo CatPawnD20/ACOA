@@ -1,6 +1,6 @@
 {
   "schema": "acoa-portable-images/1",
-  "source_set_sha256": "ae77a6b3bf6dc4c751e5c4eda6cebdeb6639dd5084f06b7411ede41d0f5a65ee",
+  "source_set_sha256": "a7241b68f57a945b12891b4f3a9650ac487034332320079555cd03fe291a91dc",
   "images": {
     "postgres": {
       "reference": "postgres:18.6-trixie@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336",
