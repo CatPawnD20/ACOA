@@ -56,6 +56,8 @@ initial attempt and draft, preserving message/thread relationships without claim
 delivery or reading.
 `0020_mail_notifications` stores evidence-bound reply classifications, one pending
 important-reply notification per mailbox event and immutable closed-window mail digests.
+`0021_dashboard_controls` adds a non-active paused queue state and immutable authenticated
+dashboard control events. Active leases cannot be paused through this transition.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 

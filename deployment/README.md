@@ -158,10 +158,14 @@ require explicit caller transactions; the dispatch-store adapter commits its own
 short transactions before/after provider I/O. No `.env` discovery or connection
 factory is supplied by these adapters. See the task records for trust boundaries.
 
-EP-07.01 dashboard tooling is pinned separately in `dashboard-requirements.txt`. The
+EP-07.01/02 dashboard tooling is pinned separately in `dashboard-requirements.txt`. The
 dashboard app factory requires a caller-injected `PostgresDashboardLoader`; it does not
-discover a database URL or read a secret. Until EP-07.02 adds server-side authentication
-and CSRF-protected controls, no remotely exposed dashboard service is configured.
+discover a database URL or read a secret. Controls require an explicitly injected
+`PostgresDashboardController` and `DashboardSecurity`. The authenticator derives a
+memory-only PBKDF2-SHA256 verifier from caller-supplied startup credentials, and every
+write also requires a short-lived actor-bound CSRF token. No listener, credential source
+or remote exposure is configured. Keep a deployed dashboard on loopback by default;
+remote access additionally requires HTTPS or a trusted VPN boundary.
 
 Use the one-shot maintenance container to keep the database port unpublished:
 

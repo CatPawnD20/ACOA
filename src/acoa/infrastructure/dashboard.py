@@ -10,6 +10,7 @@ from sqlalchemy.engine import Connection, Engine, RowMapping
 
 from acoa.application.dashboard import (
     DashboardApplication,
+    DashboardAuthority,
     DashboardCompany,
     DashboardCost,
     DashboardPerformance,
@@ -18,6 +19,7 @@ from acoa.application.dashboard import (
     DashboardTask,
     DashboardWaitingItem,
 )
+from acoa.infrastructure.policy_authority import decode_authority
 from acoa.infrastructure.postgres import validate_application_connection
 
 
@@ -38,12 +40,39 @@ class DashboardRepository:
         )
         return DashboardSnapshot(
             generated_at=generated_at,
+            authority=self._authority(),
             applications=self._applications(query),
             companies=self._companies(query),
             tasks=self._tasks(query.limit),
             waiting_items=self._waiting_items(query.limit),
             costs=self._costs(),
             performance=self._performance(),
+        )
+
+    def _authority(self) -> DashboardAuthority:
+        row = (
+            self.connection.execute(
+                text("SELECT revision,payload FROM acoa.policy_authority WHERE singleton")
+            )
+            .mappings()
+            .one()
+        )
+        authority = decode_authority(row["payload"])
+        settings = authority.settings
+        return DashboardAuthority(
+            revision=cast(int, row["revision"]),
+            paused=authority.paused,
+            dry_run=settings.dry_run,
+            external_actions_enabled=settings.external_actions_enabled,
+            applications_per_day=settings.applications.max_per_day,
+            applications_per_week=settings.applications.max_per_week,
+            outreach_per_company=settings.outreach.per_company_limit,
+            outreach_per_contact=settings.outreach.per_contact_limit,
+            currency=settings.budget.currency,
+            currency_per_day=settings.budget.max_currency_per_day,
+            currency_per_month=settings.budget.max_currency_per_month,
+            tokens_per_task=settings.budget.max_tokens_per_task,
+            seconds_per_task=settings.budget.max_time_per_task,
         )
 
     def _applications(self, query: DashboardQuery) -> tuple[DashboardApplication, ...]:

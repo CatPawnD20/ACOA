@@ -161,6 +161,8 @@ class TaskQueue:
             WITH candidate AS (
                 SELECT t.task_id, t.state FROM acoa.task_runs t
                 WHERE t.state IN ('queued', 'retry_scheduled')
+                  AND (SELECT payload->>'paused' = 'false'
+                       FROM acoa.policy_authority WHERE singleton)
                   AND t.next_run_at <= clock_timestamp() AND t.phase_attempt_count < t.max_attempts
                   AND NOT EXISTS (
                       SELECT 1 FROM acoa.task_dependencies d JOIN acoa.task_runs p
@@ -288,9 +290,52 @@ class TaskQueue:
         self._event(task, TaskState.WAITING_USER, answer_evidence_id)
         return task
 
-    def cancel(self, task_id: UUID) -> TaskSnapshot:
+    def pause(self, task_id: UUID, evidence_id: UUID) -> TaskSnapshot:
+        """Pause only work that has not started; an active lease must be resolved separately."""
+        for identifier in (task_id, evidence_id):
+            require_identifier(identifier)
+        row = self._execute(
+            "SELECT * FROM acoa.task_runs WHERE task_id = :id FOR UPDATE", {"id": task_id}
+        )
+        if row is None:
+            raise QueueError("The task to pause is missing.")
+        task = self._snapshot(row)
+        if task.state is TaskState.PAUSED:
+            return task
+        if task.state not in (TaskState.QUEUED, TaskState.RETRY_SCHEDULED):
+            raise QueueError("Only queued work can be paused without racing an active worker.")
+        updated_row = self._execute(
+            """UPDATE acoa.task_runs SET state = 'paused', updated_at = clock_timestamp()
+               WHERE task_id = :id RETURNING *""",
+            {"id": task_id},
+        )
+        if updated_row is None:
+            raise QueueError("The locked task is missing.")
+        updated = self._snapshot(updated_row)
+        self._event(updated, task.state, evidence_id)
+        return updated
+
+    def resume_paused(self, task_id: UUID, evidence_id: UUID) -> TaskSnapshot:
+        """Return an explicitly paused task to the queue without fabricating user answers."""
+        for identifier in (task_id, evidence_id):
+            require_identifier(identifier)
+        row = self._execute(
+            """UPDATE acoa.task_runs SET state = 'queued', next_run_at = clock_timestamp(),
+               phase_attempt_count = 0, updated_at = clock_timestamp()
+               WHERE task_id = :id AND state = 'paused' RETURNING *""",
+            {"id": task_id},
+        )
+        if row is None:
+            raise QueueError("Only an explicitly paused task can be resumed from the dashboard.")
+        task = self._snapshot(row)
+        self._event(task, TaskState.PAUSED, evidence_id)
+        return task
+
+    def cancel(self, task_id: UUID, evidence_id: UUID | None = None) -> TaskSnapshot:
         """Cancel unfinished work and fence its worker; no external action is undone."""
         require_identifier(task_id)
+        if evidence_id is not None:
+            require_identifier(evidence_id)
         row = self._execute(
             "SELECT * FROM acoa.task_runs WHERE task_id = :id FOR UPDATE", {"id": task_id}
         )
@@ -310,7 +355,7 @@ class TaskQueue:
         if updated_row is None:
             raise QueueError("The locked task is missing.")
         updated = self._snapshot(updated_row)
-        self._event(updated, task.state)
+        self._event(updated, task.state, evidence_id)
         return updated
 
     def reclaim(self, limit: int) -> tuple[TaskSnapshot, ...]:

@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if csrf_token %}<meta name="csrf-token" content="{{ csrf_token }}">{% endif %}
   <title>ACOA Dashboard</title>
   <link rel="stylesheet" href="{{ url_for('static', path='/dashboard.css') }}">
 </head>
@@ -24,6 +25,38 @@
   </header>
 
   <main>
+    <section class="panel wide authority" aria-label="System controls">
+      <div class="panel-heading">
+        <div><p class="kicker">Authority</p><h2>Safety and operating limits</h2></div>
+        <span>Revision {{ snapshot.authority.revision }}</span>
+      </div>
+      <div class="authority-status">
+        <span class="status">{{ 'paused' if snapshot.authority.paused else 'running' }}</span>
+        <span class="status">{{ 'dry run' if snapshot.authority.dry_run else 'live capable' }}</span>
+        <span class="status">external actions {{ 'enabled' if snapshot.authority.external_actions_enabled else 'disabled' }}</span>
+      </div>
+      {% if controls_enabled %}
+      <div class="control-row">
+        <button type="button" class="danger" data-control-url="/api/controls/safe-mode">Enter safe mode</button>
+        <button type="button" data-control-url="/api/controls/resume">Resume orchestration</button>
+        <span class="control-note">Resume keeps dry-run enabled and external actions disabled.</span>
+      </div>
+      <form id="limits-form" class="limits-grid">
+        <label>Applications / day<input name="applications_per_day" type="number" min="0" value="{{ snapshot.authority.applications_per_day if snapshot.authority.applications_per_day is not none else '' }}"></label>
+        <label>Applications / week<input name="applications_per_week" type="number" min="0" value="{{ snapshot.authority.applications_per_week if snapshot.authority.applications_per_week is not none else '' }}"></label>
+        <label>Outreach / company<input name="outreach_per_company" type="number" min="0" value="{{ snapshot.authority.outreach_per_company if snapshot.authority.outreach_per_company is not none else '' }}"></label>
+        <label>Outreach / contact<input name="outreach_per_contact" type="number" min="0" value="{{ snapshot.authority.outreach_per_contact if snapshot.authority.outreach_per_contact is not none else '' }}"></label>
+        <label>Currency<input name="currency" maxlength="3" value="{{ snapshot.authority.currency or '' }}" placeholder="USD"></label>
+        <label>Currency / day<input name="currency_per_day" inputmode="decimal" value="{{ snapshot.authority.currency_per_day if snapshot.authority.currency_per_day is not none else '' }}"></label>
+        <label>Currency / month<input name="currency_per_month" inputmode="decimal" value="{{ snapshot.authority.currency_per_month if snapshot.authority.currency_per_month is not none else '' }}"></label>
+        <label>Tokens / task<input name="tokens_per_task" type="number" min="0" value="{{ snapshot.authority.tokens_per_task if snapshot.authority.tokens_per_task is not none else '' }}"></label>
+        <label>Seconds / task<input name="seconds_per_task" type="number" min="0" value="{{ snapshot.authority.seconds_per_task if snapshot.authority.seconds_per_task is not none else '' }}"></label>
+        <button type="submit">Save limits</button>
+      </form>
+      <p id="control-status" class="control-note" aria-live="polite"></p>
+      {% endif %}
+    </section>
+
     <section class="metrics" aria-label="Current totals">
       <article><span>Open applications</span><strong>{{ snapshot.performance.open_application_count }}</strong></article>
       <article><span>Waiting for you</span><strong>{{ snapshot.performance.waiting_user_count }}</strong></article>
@@ -109,17 +142,18 @@
       <div class="panel-heading"><div><p class="kicker">Recent activity</p><h2>Tasks</h2></div><span>{{ snapshot.tasks|length }} shown</span></div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Task</th><th>State</th><th>Attempts</th><th>Next run</th><th>Updated</th></tr></thead>
+          <thead><tr><th>Task</th><th>State</th><th>Attempts</th><th>Next run</th><th>Updated</th>{% if controls_enabled %}<th>Controls</th>{% endif %}</tr></thead>
           <tbody>
           {% for item in snapshot.tasks %}
-            <tr><td><strong>{{ item.kind|replace('_', ' ') }}</strong><small>{{ item.task_id }}</small></td><td><span class="status">{{ item.state|replace('_', ' ') }}</span></td><td>{{ item.attempt_count }}</td><td>{{ item.next_run_at.isoformat() }}</td><td>{{ item.updated_at.isoformat() }}</td></tr>
+            <tr><td><strong>{{ item.kind|replace('_', ' ') }}</strong><small>{{ item.task_id }}</small></td><td><span class="status">{{ item.state|replace('_', ' ') }}</span></td><td>{{ item.attempt_count }}</td><td>{{ item.next_run_at.isoformat() }}</td><td>{{ item.updated_at.isoformat() }}</td>{% if controls_enabled %}<td class="task-controls">{% if item.state in ('queued', 'retry_scheduled') %}<button type="button" data-task-action="pause" data-task-id="{{ item.task_id }}">Pause</button>{% elif item.state == 'paused' %}<button type="button" data-task-action="resume" data-task-id="{{ item.task_id }}">Resume</button>{% endif %}{% if item.state not in ('completed', 'failed', 'cancelled') %}<button type="button" class="danger" data-task-action="cancel" data-task-id="{{ item.task_id }}" data-confirm="Cancel this task? This cannot restart a completed external action.">Cancel</button>{% endif %}</td>{% endif %}</tr>
           {% else %}
-            <tr><td colspan="5" class="empty">No tasks recorded.</td></tr>
+            <tr><td colspan="{{ 6 if controls_enabled else 5 }}" class="empty">No tasks recorded.</td></tr>
           {% endfor %}
           </tbody>
         </table>
       </div>
     </section>
   </main>
+  {% if controls_enabled %}<script src="{{ url_for('static', path='/dashboard.js') }}" defer></script>{% endif %}
 </body>
 </html>

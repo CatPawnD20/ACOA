@@ -85,8 +85,26 @@ class DashboardPerformance:
 
 
 @dataclass(frozen=True, slots=True)
+class DashboardAuthority:
+    revision: int
+    paused: bool
+    dry_run: bool
+    external_actions_enabled: bool
+    applications_per_day: int | None
+    applications_per_week: int | None
+    outreach_per_company: int | None
+    outreach_per_contact: int | None
+    currency: str | None
+    currency_per_day: Decimal | None
+    currency_per_month: Decimal | None
+    tokens_per_task: int | None
+    seconds_per_task: int | None
+
+
+@dataclass(frozen=True, slots=True)
 class DashboardSnapshot:
     generated_at: datetime
+    authority: DashboardAuthority
     applications: tuple[DashboardApplication, ...]
     companies: tuple[DashboardCompany, ...]
     tasks: tuple[DashboardTask, ...]

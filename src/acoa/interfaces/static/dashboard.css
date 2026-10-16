@@ -25,6 +25,8 @@ h2 { font-size: 1.15rem; }
 input, button { min-height: 42px; border: 1px solid var(--line); font: inherit; }
 input { flex: 1; min-width: 0; padding: 0 .85rem; color: var(--text); background: #0d1528; border-radius: .65rem 0 0 .65rem; }
 button { padding: 0 1rem; color: #071511; font-weight: 800; background: var(--accent); border-color: var(--accent); border-radius: 0 .65rem .65rem 0; cursor: pointer; }
+button:disabled { cursor: wait; opacity: .65; }
+button.danger { color: #ffe9ea; background: #7b2631; border-color: #a84150; }
 main { width: min(1320px, calc(100% - 4rem)); margin: 2rem auto 4rem; }
 .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1rem; }
 .metrics article, .panel { background: color-mix(in srgb, var(--surface) 94%, transparent); border: 1px solid var(--line); border-radius: 1rem; box-shadow: 0 20px 45px rgba(0,0,0,.16); }
@@ -52,10 +54,20 @@ td small { display: block; max-width: 24ch; margin-top: .28rem; overflow: hidden
 .performance dt { color: var(--muted); font-size: .74rem; }
 .performance dd { margin: .35rem 0 0; font-size: 1.25rem; font-weight: 750; }
 .empty { padding: 1.4rem !important; color: var(--muted); text-align: center; }
+.authority-status, .control-row, .task-controls { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+.control-row { margin-top: 1rem; }
+.control-row button, .task-controls button, .limits-grid button { border-radius: .6rem; }
+.control-note { color: var(--muted); font-size: .76rem; }
+.limits-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .7rem; margin-top: 1rem; }
+.limits-grid label { color: var(--muted); font-size: .72rem; }
+.limits-grid input { width: 100%; margin-top: .3rem; border-radius: .55rem; }
+.limits-grid button { align-self: end; }
+.task-controls button { min-height: 32px; padding: 0 .6rem; font-size: .72rem; }
 
 @media (max-width: 800px) {
   .topbar { align-items: stretch; flex-direction: column; padding: 2rem 1.25rem; }
   main { width: calc(100% - 2rem); }
   .metrics { grid-template-columns: repeat(2, 1fr); }
   .grid { grid-template-columns: 1fr; }
+  .limits-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

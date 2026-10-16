@@ -35,6 +35,7 @@ class TaskState(StrEnum):
     COMPLETED = "completed"
     WAITING_USER = "waiting_user"
     RETRY_SCHEDULED = "retry_scheduled"
+    PAUSED = "paused"
     BLOCKED = "blocked"
     FAILED = "failed"
     CANCELLED = "cancelled"
