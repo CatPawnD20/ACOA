@@ -1,7 +1,8 @@
-"""Read-only PostgreSQL projection for the EP-07.01 dashboard."""
+"""Privacy-limited PostgreSQL projections for the EP-07 dashboard."""
 
 from datetime import datetime
 from decimal import Decimal
+from hashlib import sha256
 from typing import cast
 from uuid import UUID
 
@@ -10,9 +11,12 @@ from sqlalchemy.engine import Connection, Engine, RowMapping
 
 from acoa.application.dashboard import (
     DashboardApplication,
+    DashboardAuditEvent,
     DashboardAuthority,
     DashboardCompany,
     DashboardCost,
+    DashboardDailyReport,
+    DashboardNotification,
     DashboardPerformance,
     DashboardQuery,
     DashboardSnapshot,
@@ -47,6 +51,87 @@ class DashboardRepository:
             waiting_items=self._waiting_items(query.limit),
             costs=self._costs(),
             performance=self._performance(),
+            audit_events=self._audit_events(query.limit),
+            notifications=self._notifications(query.limit),
+            daily_reports=self._daily_reports(min(query.limit, 30)),
+        )
+
+    @staticmethod
+    def _masked_reference(identifier: UUID) -> str:
+        """Return a stable local correlation label without exposing a stored identifier."""
+        return f"ref-{sha256(identifier.bytes).hexdigest()[:12]}"
+
+    def _audit_events(self, limit: int) -> tuple[DashboardAuditEvent, ...]:
+        rows = self.connection.execute(
+            text("""SELECT category,action,state,reference_id,recorded_at FROM (
+                    SELECT 'task' category,'transition' action,new_state state,
+                        task_id reference_id,recorded_at FROM acoa.task_events
+                    UNION ALL
+                    SELECT 'application','lifecycle',new_state,application_id,recorded_at
+                        FROM acoa.application_events
+                    UNION ALL
+                    SELECT 'external_action','reconciliation',new_state,attempt_id,recorded_at
+                        FROM acoa.reconciliation_events
+                    UNION ALL
+                    SELECT 'model','call',kind,call_id,recorded_at
+                        FROM acoa.model_call_events
+                    UNION ALL
+                    SELECT 'dashboard','control',action,COALESCE(task_id,event_id),recorded_at
+                        FROM acoa.dashboard_control_events
+                ) event ORDER BY recorded_at DESC,reference_id LIMIT :limit"""),
+            {"limit": limit},
+        ).mappings()
+        return tuple(
+            DashboardAuditEvent(
+                category=cast(str, row["category"]),
+                action=cast(str, row["action"]),
+                state=cast(str, row["state"]),
+                reference=self._masked_reference(cast(UUID, row["reference_id"])),
+                recorded_at=cast(datetime, row["recorded_at"]),
+            )
+            for row in rows
+        )
+
+    def _notifications(self, limit: int) -> tuple[DashboardNotification, ...]:
+        rows = self.connection.execute(
+            text("""SELECT notification.kind,notification.urgency,notification.state,
+                    notification.application_id,notification.created_at
+                FROM acoa.notification_items notification
+                ORDER BY notification.created_at DESC,notification.notification_id
+                LIMIT :limit"""),
+            {"limit": limit},
+        ).mappings()
+        return tuple(
+            DashboardNotification(
+                kind=cast(str, row["kind"]),
+                urgency=cast(str, row["urgency"]),
+                state=cast(str, row["state"]),
+                application_reference=self._masked_reference(cast(UUID, row["application_id"])),
+                created_at=cast(datetime, row["created_at"]),
+            )
+            for row in rows
+        )
+
+    def _daily_reports(self, limit: int) -> tuple[DashboardDailyReport, ...]:
+        rows = self.connection.execute(
+            text("""SELECT window_start,window_end,created_at,incoming_count,
+                    classified_count,immediate_count,reply_draft_count,followup_draft_count
+                FROM acoa.mail_daily_digests
+                ORDER BY window_end DESC,digest_id LIMIT :limit"""),
+            {"limit": limit},
+        ).mappings()
+        return tuple(
+            DashboardDailyReport(
+                window_start=cast(datetime, row["window_start"]),
+                window_end=cast(datetime, row["window_end"]),
+                created_at=cast(datetime, row["created_at"]),
+                incoming_count=cast(int, row["incoming_count"]),
+                classified_count=cast(int, row["classified_count"]),
+                immediate_count=cast(int, row["immediate_count"]),
+                reply_draft_count=cast(int, row["reply_draft_count"]),
+                followup_draft_count=cast(int, row["followup_draft_count"]),
+            )
+            for row in rows
         )
 
     def _authority(self) -> DashboardAuthority:

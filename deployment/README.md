@@ -166,6 +166,11 @@ memory-only PBKDF2-SHA256 verifier from caller-supplied startup credentials, and
 write also requires a short-lived actor-bound CSRF token. No listener, credential source
 or remote exposure is configured. Keep a deployed dashboard on loopback by default;
 remote access additionally requires HTTPS or a trusted VPN boundary.
+EP-07.03 adds a bounded 15-second same-origin JSON refresh while the page is visible.
+The dashboard audit projection unions only selected scalar event columns and replaces
+stored UUIDs with short SHA-256 correlation labels; it never reads audit JSON payloads,
+actor digests, evidence identifiers or provider message identifiers. Important mail
+notifications and closed daily mail reports are displayed from their scalar summaries.
 
 Use the one-shot maintenance container to keep the database port unpublished:
 

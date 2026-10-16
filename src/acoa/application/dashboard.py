@@ -102,6 +102,36 @@ class DashboardAuthority:
 
 
 @dataclass(frozen=True, slots=True)
+class DashboardAuditEvent:
+    category: str
+    action: str
+    state: str
+    reference: str
+    recorded_at: datetime
+
+
+@dataclass(frozen=True, slots=True)
+class DashboardNotification:
+    kind: str
+    urgency: str
+    state: str
+    application_reference: str
+    created_at: datetime
+
+
+@dataclass(frozen=True, slots=True)
+class DashboardDailyReport:
+    window_start: datetime
+    window_end: datetime
+    created_at: datetime
+    incoming_count: int
+    classified_count: int
+    immediate_count: int
+    reply_draft_count: int
+    followup_draft_count: int
+
+
+@dataclass(frozen=True, slots=True)
 class DashboardSnapshot:
     generated_at: datetime
     authority: DashboardAuthority
@@ -111,3 +141,6 @@ class DashboardSnapshot:
     waiting_items: tuple[DashboardWaitingItem, ...]
     costs: tuple[DashboardCost, ...]
     performance: DashboardPerformance
+    audit_events: tuple[DashboardAuditEvent, ...]
+    notifications: tuple[DashboardNotification, ...]
+    daily_reports: tuple[DashboardDailyReport, ...]

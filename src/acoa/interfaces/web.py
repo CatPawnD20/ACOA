@@ -174,12 +174,15 @@ def create_dashboard_app(
 
     @app.get("/api/dashboard", response_class=JSONResponse)
     def dashboard_api(
-        _actor: Annotated[str, Depends(current_actor)],
+        actor: Annotated[str, Depends(current_actor)],
         q: Annotated[str | None, Query(max_length=100)] = None,
         limit: Annotated[int, Query(ge=1, le=200)] = 100,
     ) -> JSONResponse:
         snapshot = loader(_dashboard_query(q, limit))
-        return JSONResponse(jsonable_encoder(asdict(snapshot)))
+        result = JSONResponse(jsonable_encoder(asdict(snapshot)))
+        if security is not None:
+            result.headers["X-CSRF-Token"] = security.csrf.issue(actor)
+        return result
 
     if controller is not None:
 
