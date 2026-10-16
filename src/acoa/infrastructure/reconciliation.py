@@ -10,7 +10,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import text
 from sqlalchemy.engine import Connection, RowMapping
 
-from acoa.domain.actions import ActionState
+from acoa.domain.actions import ActionState, affects_application_submission
 from acoa.domain.submission_evidence import (
     IncidentKind,
     SubmissionClaim,
@@ -128,6 +128,10 @@ class ReconciliationStore:
 
     def record(self, attempt_id: UUID, evidence: SubmissionEvidence | None) -> ActionState:
         _, _, prepared, row, _ = ActionProtocol(self.connection).lock_attempt(attempt_id)
+        if not affects_application_submission(prepared):
+            raise DatabaseBoundaryError(
+                "Submission reconciliation cannot process another external action kind."
+            )
         state = ActionState(row["state"])
         if state not in (
             ActionState.RECONCILING,

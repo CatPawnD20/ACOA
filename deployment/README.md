@@ -143,6 +143,13 @@ thread identifiers as immutable acceptance evidence. It does not claim delivery 
 `0020_mail_notifications` adds immutable reply classifications, deduplicated pending
 important-reply notification items and closed-window mail digests. It does not deliver
 notifications or schedule report windows.
+`0021_dashboard_controls` extends task state with safe pause/resume controls and stores
+immutable authenticated dashboard-control audit events.
+`0022_career_accounts` adds immutable account plans and outcomes bound to task,
+application, provider and external-action attempt identities. It stores login and
+provider-account hashes plus an opaque secret reference, never a login value or
+password. Account creation remains unavailable without an explicitly injected secret
+store and trusted provider adapter registered with the central executor.
 
 EP-05.04 provides a provider-neutral local filesystem adapter and logical artifact
 backup/restore verification. Callers must select a dedicated root explicitly. Storage

@@ -58,6 +58,10 @@ delivery or reading.
 important-reply notification per mailbox event and immutable closed-window mail digests.
 `0021_dashboard_controls` adds a non-active paused queue state and immutable authenticated
 dashboard control events. Active leases cannot be paused through this transition.
+`0022_career_accounts` adds immutable, task/application-bound account plans and one
+append-only outcome per external-action attempt. It stores only login/provider hashes
+and an opaque unique secret reference; plaintext login values and passwords remain in
+the separately injected material and secret stores.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 

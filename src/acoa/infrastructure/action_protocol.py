@@ -23,6 +23,7 @@ from acoa.domain.actions import (
     ActionState,
     DispatchLimits,
     PreparedAction,
+    affects_application_submission,
     prepared_binding_sha256,
     validate_prepared_application,
 )
@@ -382,11 +383,12 @@ class ActionProtocol:
             updated_at = clock_timestamp() WHERE attempt_id = :id"""),
             {"id": prepared.attempt_id, "token": token},
         )
-        self.connection.execute(
-            text("""UPDATE acoa.applications
-            SET submission_state = 'submission_unconfirmed' WHERE application_id = :id"""),
-            {"id": prepared.application_id},
-        )
+        if affects_application_submission(prepared):
+            self.connection.execute(
+                text("""UPDATE acoa.applications
+                SET submission_state = 'submission_unconfirmed' WHERE application_id = :id"""),
+                {"id": prepared.application_id},
+            )
         return token
 
     def record_response(
@@ -396,7 +398,7 @@ class ActionProtocol:
         require_identifier(token)
         if receipt_ref is not None:
             require_identifier(receipt_ref)
-        _, _, _, row, _ = self.lock_attempt(attempt_id)
+        _, _, prepared, row, _ = self.lock_attempt(attempt_id)
         if row["execution_token"] != token:
             raise DatabaseBoundaryError("The response does not match the dispatched attempt.")
         state = ActionState(row["state"])
@@ -409,11 +411,12 @@ class ActionProtocol:
             WHERE attempt_id = :id"""),
             {"id": attempt_id, "state": target.value, "receipt": receipt_ref},
         )
-        self.connection.execute(
-            text("""UPDATE acoa.applications
-            SET submission_state = 'submission_unconfirmed' WHERE application_id = :id"""),
-            {"id": row["application_id"]},
-        )
-        if target is ActionState.UNCONFIRMED:
+        if affects_application_submission(prepared):
+            self.connection.execute(
+                text("""UPDATE acoa.applications
+                SET submission_state = 'submission_unconfirmed' WHERE application_id = :id"""),
+                {"id": row["application_id"]},
+            )
+        if target is ActionState.UNCONFIRMED and affects_application_submission(prepared):
             IncidentStore(self.connection).open(attempt_id, IncidentKind.UNKNOWN_SUBMISSION)
         return target

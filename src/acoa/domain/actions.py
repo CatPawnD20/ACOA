@@ -63,6 +63,7 @@ class PreparedAction:
         if not isinstance(self.request, PolicyRequest) or self.request.action not in (
             ActionKind.SUBMIT_INITIAL_APPLICATION,
             ActionKind.SEND_INITIAL_OUTREACH,
+            ActionKind.CREATE_CAREER_ACCOUNT,
         ):
             raise DomainError("Initial-action execution requires an explicit supported request.")
 
@@ -97,6 +98,16 @@ def validate_prepared_application(
     prepared: PreparedAction, application: ApplicationSnapshot
 ) -> None:
     """Bind initial action kind and semantic identity to an open unsent canonical episode."""
+    if prepared.request.action is ActionKind.CREATE_CAREER_ACCOUNT:
+        if (
+            prepared.request.account_id is None
+            or prepared.semantic_key
+            != career_account_semantic_key(prepared.request.account_id, prepared.provider_id)
+            or application.state is not ApplicationState.OPEN
+            or application.submission_state is not SubmissionState.NOT_STARTED
+        ):
+            raise DomainError("Prepared account creation does not match an open application.")
+        return
     expected = (
         ActionKind.SUBMIT_INITIAL_APPLICATION
         if application.spec.identity.kind is ApplicationKind.INITIAL_APPLICATION
@@ -110,6 +121,27 @@ def validate_prepared_application(
         or application.submission_state is not SubmissionState.NOT_STARTED
     ):
         raise DomainError("Prepared action does not match an open unsent canonical application.")
+
+
+def career_account_semantic_key(account_id: UUID, provider_id: UUID) -> str:
+    """Fence one logical career account independently of an application attempt."""
+    require_identifier(account_id)
+    require_identifier(provider_id)
+    return content_digest(
+        {
+            "schema": "acoa-career-account-operation/1",
+            "account_id": str(account_id),
+            "provider_id": str(provider_id),
+        }
+    )
+
+
+def affects_application_submission(prepared: PreparedAction) -> bool:
+    """Identify actions that can change the application's submission state."""
+    return prepared.request.action in (
+        ActionKind.SUBMIT_INITIAL_APPLICATION,
+        ActionKind.SEND_INITIAL_OUTREACH,
+    )
 
 
 def prepared_binding_sha256(prepared: PreparedAction) -> str:
