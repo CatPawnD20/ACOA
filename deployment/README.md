@@ -135,6 +135,9 @@ provider-event records. Cursor advancement and event insertion commit together; 
 application role cannot update or delete retained event/run history.
 `0017_mailbox_sync_grants` narrows mutable-state updates to the cursor, revision and
 timestamp columns, preventing the application role from rewriting account/provider keys.
+`0018_mail_drafts` adds immutable initial-application, reply and follow-up draft records
+plus separate provider-draft receipts. These tables contain no sent-state transition;
+the application role has read/insert-only access.
 
 EP-05.04 provides a provider-neutral local filesystem adapter and logical artifact
 backup/restore verification. Callers must select a dedicated root explicitly. Storage

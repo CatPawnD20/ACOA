@@ -7,6 +7,8 @@ from enum import StrEnum
 from hashlib import sha256
 from uuid import UUID
 
+from acoa.domain.action_requests import PolicyRequest
+from acoa.domain.authorization import ActionKind, Channel
 from acoa.domain.values import (
     DomainError,
     require_identifier,
@@ -26,6 +28,12 @@ class MailChangeKind(StrEnum):
 class MailSyncStatus(StrEnum):
     COMPLETED = "completed"
     FULL_SYNC_REQUIRED = "full_sync_required"
+
+
+class MailDraftKind(StrEnum):
+    INITIAL_APPLICATION = "initial_application"
+    REPLY = "reply"
+    FOLLOWUP = "followup"
 
 
 class MailCursorExpired(DomainError):
@@ -242,6 +250,96 @@ class ProviderDraft:
             self.provider_thread_id,
         ):
             require_provider_id(value)
+
+
+def draft_request_sha256(request: DraftRequest) -> str:
+    """Bind policy to the exact account, recipients, subject, body and thread."""
+    if not isinstance(request, DraftRequest):
+        raise DomainError("A validated mail draft request is required.")
+    value = "\x1f".join(
+        (
+            "acoa-mail-draft-content/1",
+            str(request.draft_id),
+            request.account_email,
+            *request.recipients,
+            request.subject,
+            request.body,
+            request.provider_thread_id or "",
+        )
+    )
+    return sha256(value.encode("utf-8")).hexdigest()
+
+
+@dataclass(frozen=True, slots=True)
+class MailDraftRecord:
+    """A prepared draft; this record is neither send authority nor sent evidence."""
+
+    application_id: UUID
+    account_id: UUID = field(repr=False)
+    recipient_id: UUID = field(repr=False)
+    kind: MailDraftKind
+    request: DraftRequest = field(repr=False)
+    policy_request: PolicyRequest = field(repr=False)
+    source_message: MailMessageRef | None = field(default=None, repr=False)
+
+    def __post_init__(self) -> None:
+        for identifier in (self.application_id, self.account_id, self.recipient_id):
+            require_identifier(identifier)
+        if not isinstance(self.kind, MailDraftKind) or not isinstance(self.request, DraftRequest):
+            raise DomainError("A mail draft record requires validated draft values.")
+        if not isinstance(self.policy_request, PolicyRequest):
+            raise DomainError("A mail draft record requires an exact policy request.")
+        if len(self.request.recipients) != 1:
+            raise DomainError("A policy-bound mail draft requires exactly one recipient.")
+        self._validate_policy_binding()
+        self._validate_conversation_binding()
+
+    @property
+    def draft_id(self) -> UUID:
+        return self.request.draft_id
+
+    def _validate_policy_binding(self) -> None:
+        expected_action = {
+            MailDraftKind.INITIAL_APPLICATION: ActionKind.SUBMIT_INITIAL_APPLICATION,
+            MailDraftKind.REPLY: ActionKind.DRAFT_REPLY,
+            MailDraftKind.FOLLOWUP: ActionKind.DRAFT_FOLLOWUP,
+        }[self.kind]
+        policy = self.policy_request
+        if (
+            policy.request_id != self.request.draft_id
+            or policy.action is not expected_action
+            or policy.channel is not Channel.EMAIL
+            or policy.account_id != self.account_id
+            or policy.recipient_id != self.recipient_id
+            or policy.content_sha256 != draft_request_sha256(self.request)
+        ):
+            raise DomainError("A mail draft must bind its exact policy action and content.")
+
+    def _validate_conversation_binding(self) -> None:
+        if self.kind is MailDraftKind.INITIAL_APPLICATION:
+            if self.source_message is not None or self.request.provider_thread_id is not None:
+                raise DomainError("An initial application draft cannot claim an existing thread.")
+            return
+        if (
+            not isinstance(self.source_message, MailMessageRef)
+            or self.request.provider_thread_id != self.source_message.provider_thread_id
+        ):
+            raise DomainError("A reply or follow-up draft requires its exact source thread.")
+
+
+@dataclass(frozen=True, slots=True)
+class MailDraftReceipt:
+    """Proof of provider draft creation only; it never proves message sending."""
+
+    provider: str
+    draft: ProviderDraft
+    recorded_at: datetime
+
+    def __post_init__(self) -> None:
+        require_provider_name(self.provider)
+        if not isinstance(self.draft, ProviderDraft):
+            raise DomainError("A mail draft receipt requires a validated provider draft.")
+        require_timestamp(self.recorded_at)
 
 
 def mail_change_sha256(account_id: UUID, provider: str, change: MailChange) -> str:

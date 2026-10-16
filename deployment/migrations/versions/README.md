@@ -49,6 +49,8 @@ provider events. Event insertion and cursor advancement share one transaction, s
 restart replays provider changes safely without creating a second local event.
 `0017_mailbox_sync_grants` narrows the application role's cursor update privilege to
 the cursor, revision and timestamp columns; account/provider identity remains fixed.
+`0018_mail_drafts` stores policy/content-bound mail drafts and provider draft receipts
+as immutable records. It supplies no sent state and no reply/follow-up send path.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 
