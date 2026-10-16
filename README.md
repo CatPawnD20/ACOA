@@ -1,18 +1,18 @@
 # ACOA — Safe Configuration and Dedicated PostgreSQL
 
-**Autonomous Career Opportunity Agent (ACOA)** is a personal, single-user career-opportunity discovery and authorized initial-application project. EP-00.01/02 provide an installable Python package, safe import checks, development tooling, and validated configuration. EP-00.03 adds a dedicated PostgreSQL Compose deployment. EP-04.01–04 add authorized source-discovery contracts, immutable provenance, evidence-bound opportunity/corporate-channel research, employer risk verification, company-wide contact controls, conservative cross-source deduplication and permission-bound source fallback decisions. EP-05.01–04 add verified composition and immutable local artifact lifecycle controls. EP-06.01–05 add offline mail-provider mapping, restart-safe inbox polling, draft-only communication, initial-mail evidence, deduplicated important-reply notification items and mail daily digests; no real source, account/OAuth token, remote storage, notification transport or application-submission workflow is configured.
+**Autonomous Career Opportunity Agent (ACOA)** is a personal, single-user career-opportunity discovery and authorized initial-application project. EP-00.01/02 provide an installable Python package, safe import checks, development tooling, and validated configuration. EP-00.03 adds a dedicated PostgreSQL Compose deployment. EP-04.01–04 add authorized source-discovery contracts, immutable provenance, evidence-bound opportunity/corporate-channel research, employer risk verification, company-wide contact controls, conservative cross-source deduplication and permission-bound source fallback decisions. EP-05.01–04 add verified composition and immutable local artifact lifecycle controls. EP-06.01–05 add offline mail-provider mapping, restart-safe inbox polling, draft-only communication, initial-mail evidence, deduplicated important-reply notification items and mail daily digests. EP-07.01 adds a read-only FastAPI and server-rendered HTML dashboard projection; no real source, account/OAuth token, remote storage, notification transport or application-submission workflow is configured.
 
 ## Architecture and current limits
 
 The approved architecture is a modular monolith in one Python repository (ADR-001). A dedicated PostgreSQL service is configured under ADR-002/011/013. Later tasks add durable task execution (ADR-003), central ModelGateway/ModelRouter (ADR-015), and Policy Gate/External Action Executor (ADR-006/007). Browser access is layered and isolated; email providers use a shared contract; artifacts are versioned; deployment remains portable between local and cloud environments.
 
-The Python package does not start those services. Importing `acoa` or `acoa.config` reads no configuration and starts no network request, database connection, browser, model call, subprocess, or background job. PostgreSQL and migrations are started explicitly. EP-02.01 adds a transaction-scoped task queue adapter; it never starts workers or opens connections on import. Replies and follow-up emails remain user-sent under P-01/P-02.
+The Python package does not start those services. Importing `acoa` or `acoa.config` reads no configuration and starts no network request, database connection, browser, model call, subprocess, or background job. PostgreSQL and migrations are started explicitly. EP-02.01 adds a transaction-scoped task queue adapter; it never starts workers or opens connections on import. The EP-07.01 app factory requires an explicitly injected snapshot loader and opens nothing on import. Replies and follow-up emails remain user-sent under P-01/P-02.
 
 ## Local development
 
 Python 3.12 is the verified baseline; package metadata requires Python >=3.12. Python 3.12.14 was exercised on Windows and in a clean Debian Linux container. Other Python versions and GitHub-hosted runner environments have not been exercised.
 
-The pinned direct tools are pytest 9.1.1, Ruff 0.17.0, mypy 1.18.2, and the Hatchling 1.32.4 build backend. CI also pins pip 26.2.1 and uses pip-audit 2.10.1 in a separate tool environment. There are no runtime dependencies. Transitive development dependencies are resolved by pip; a complete dependency lock is not claimed.
+The pinned direct tools are pytest 9.1.1, Ruff 0.17.0, mypy 1.18.2, and the Hatchling 1.32.4 build backend. CI also pins pip 26.2.1 and uses pip-audit 2.10.1 in a separate tool environment. The base package retains no mandatory runtime dependencies; PostgreSQL migration and dashboard adapter dependencies have separate pinned manifests under `deployment/`. Transitive dependencies are resolved by pip; a complete dependency lock is not claimed.
 
 From the repository root, use an installed Python 3.12 interpreter to create an isolated environment. PowerShell commands:
 
@@ -20,6 +20,8 @@ From the repository root, use an installed Python 3.12 interpreter to create an 
 python -m venv .venv
 & .\.venv\Scripts\python.exe -m pip --isolated install --index-url https://pypi.org/simple pip==26.2.1
 & .\.venv\Scripts\python.exe -m pip --isolated install --index-url https://pypi.org/simple --no-binary=mypy -e ".[dev]"
+& .\.venv\Scripts\python.exe -m pip --isolated install --index-url https://pypi.org/simple -r deployment\migration-requirements.txt
+& .\.venv\Scripts\python.exe -m pip --isolated install --index-url https://pypi.org/simple -r deployment\dashboard-requirements.txt
 & .\.venv\Scripts\python.exe -m pytest -q
 & .\.venv\Scripts\python.exe -m ruff check .
 & .\.venv\Scripts\python.exe -m ruff format --check src tests
@@ -41,7 +43,7 @@ $env:TEMP = Join-Path (Get-Location).Path '.tmp'
 $env:TMP = $env:TEMP
 ```
 
-Smoke tests use a fresh child process outside the source working directory, with inherited credentials removed and guards rejecting network, subprocess, background-thread, and private configuration access. Metadata verification confirms that all declared dependencies are restricted to the development extra.
+Smoke tests use a fresh child process outside the source working directory, with inherited credentials removed and guards rejecting network, subprocess, background-thread, and private configuration access. Metadata verification confirms that base-package metadata declares only the development extra; deployment adapters are installed explicitly from their separate manifests.
 
 ## Continuous integration
 
@@ -143,4 +145,4 @@ Authenticated review ingestion and durable profile history remain later work.
 
 Approved L0–L4 contents were preserved byte-for-byte during workspace preparation. Historical approval statements and filenames inside those documents are explained in [the specification index](docs/README.md).
 
-**Completed scope:** EP-00 bootstrap/infrastructure, EP-01 domain/policy, EP-02 durable execution/reconciliation with local fault verification, EP-03.01–05 offline model routing/matching/evaluation, EP-04.01–04 authorized discovery/research/verification/resolution, EP-05.01–04 verified composition/artifact lifecycle, and EP-06.01–05 offline mail-provider, restart-safe inbox polling, draft-only communication, initial-mail evidence and notification/digest boundaries. Policy v2 adds conservative Decimal hard-cap checks. Hosted CI has not run. See the [specification index](docs/README.md) for exact results and trust boundaries. EP-03.05 used synthetic labels only, so production quality and cost thresholds remain unset. EP-04–06 use fake or injected providers and synthetic evidence only; no live source, browser, model, sending, file artifact or application provider is configured.
+**Completed scope:** EP-00 bootstrap/infrastructure, EP-01 domain/policy, EP-02 durable execution/reconciliation with local fault verification, EP-03.01–05 offline model routing/matching/evaluation, EP-04.01–04 authorized discovery/research/verification/resolution, EP-05.01–04 verified composition/artifact lifecycle, EP-06.01–05 offline mail-provider, restart-safe inbox polling, draft-only communication, initial-mail evidence and notification/digest boundaries, and the EP-07.01 read-only dashboard projection. Policy v2 adds conservative Decimal hard-cap checks. Hosted CI has not run. See the [specification index](docs/README.md) for exact results and trust boundaries. EP-03.05 used synthetic labels only, so production quality and cost thresholds remain unset. EP-04–07 use fake, injected or synthetic data only; no live source, browser, model, sending, file artifact or application provider is configured.

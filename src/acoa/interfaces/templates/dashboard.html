@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ACOA Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/dashboard.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Autonomous Career Opportunity Agent</p>
+      <h1>Operations overview</h1>
+      <p class="timestamp">Snapshot {{ snapshot.generated_at.isoformat() }}</p>
+    </div>
+    <form method="get" class="search">
+      <label for="q">Find an application or company</label>
+      <div class="search-row">
+        <input id="q" name="q" maxlength="100" value="{{ query.search or '' }}"
+               placeholder="Company domain or application ID">
+        <button type="submit">Search</button>
+      </div>
+    </form>
+  </header>
+
+  <main>
+    <section class="metrics" aria-label="Current totals">
+      <article><span>Open applications</span><strong>{{ snapshot.performance.open_application_count }}</strong></article>
+      <article><span>Waiting for you</span><strong>{{ snapshot.performance.waiting_user_count }}</strong></article>
+      <article><span>Completed tasks</span><strong>{{ snapshot.performance.completed_task_count }}</strong></article>
+      <article><span>Unconfirmed actions</span><strong>{{ snapshot.performance.unconfirmed_action_count }}</strong></article>
+    </section>
+
+    <section class="panel wide">
+      <div class="panel-heading">
+        <div><p class="kicker">Pipeline</p><h2>Applications</h2></div>
+        <span>{{ snapshot.applications|length }} shown</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Company</th><th>Kind</th><th>Lifecycle</th><th>Submission</th><th>Created</th></tr></thead>
+          <tbody>
+          {% for item in snapshot.applications %}
+            <tr>
+              <td><strong>{{ item.company_label }}</strong><small>{{ item.application_id }}</small></td>
+              <td>{{ item.kind|replace('_', ' ') }}</td>
+              <td><span class="status">{{ item.state|replace('_', ' ') }}</span></td>
+              <td>{{ item.submission_state|replace('_', ' ') }}</td>
+              <td><time>{{ item.created_at.date() }}</time></td>
+            </tr>
+          {% else %}
+            <tr><td colspan="5" class="empty">No matching applications.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <div class="panel-heading"><div><p class="kicker">Attention</p><h2>Waiting for you</h2></div></div>
+        <ul class="stack">
+        {% for item in snapshot.waiting_items %}
+          <li><strong>{{ item.task_kind|replace('_', ' ') }}</strong><span>Question {{ item.question_id }}</span><time>{{ item.waiting_since.isoformat() }}</time></li>
+        {% else %}
+          <li class="empty">No tasks need a decision.</li>
+        {% endfor %}
+        </ul>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading"><div><p class="kicker">Resources</p><h2>Cost</h2></div></div>
+        <ul class="stack">
+        {% for item in snapshot.costs %}
+          <li><strong>{{ item.currency }} {{ item.consumed }}</strong><span>{{ item.reserved }} reserved</span><span>{{ item.unsettled_count }} unsettled</span></li>
+        {% else %}
+          <li class="empty">No recorded cost.</li>
+        {% endfor %}
+        </ul>
+      </section>
+    </div>
+
+    <div class="grid">
+      <section class="panel">
+        <div class="panel-heading"><div><p class="kicker">Organizations</p><h2>Companies</h2></div></div>
+        <ul class="stack">
+        {% for item in snapshot.companies %}
+          <li><strong>{{ item.label }}</strong><span>{{ item.open_application_count }} open / {{ item.application_count }} total</span></li>
+        {% else %}
+          <li class="empty">No matching companies.</li>
+        {% endfor %}
+        </ul>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading"><div><p class="kicker">Execution</p><h2>Performance</h2></div></div>
+        <dl class="performance">
+          <div><dt>Tasks</dt><dd>{{ snapshot.performance.task_count }}</dd></div>
+          <div><dt>Failed tasks</dt><dd>{{ snapshot.performance.failed_task_count }}</dd></div>
+          <div><dt>Model calls</dt><dd>{{ snapshot.performance.model_call_count }}</dd></div>
+          <div><dt>Tokens</dt><dd>{{ snapshot.performance.consumed_tokens }}</dd></div>
+          <div><dt>Model seconds</dt><dd>{{ snapshot.performance.consumed_seconds }}</dd></div>
+          <div><dt>Verified actions</dt><dd>{{ snapshot.performance.verified_action_count }}</dd></div>
+        </dl>
+      </section>
+    </div>
+
+    <section class="panel wide">
+      <div class="panel-heading"><div><p class="kicker">Recent activity</p><h2>Tasks</h2></div><span>{{ snapshot.tasks|length }} shown</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Task</th><th>State</th><th>Attempts</th><th>Next run</th><th>Updated</th></tr></thead>
+          <tbody>
+          {% for item in snapshot.tasks %}
+            <tr><td><strong>{{ item.kind|replace('_', ' ') }}</strong><small>{{ item.task_id }}</small></td><td><span class="status">{{ item.state|replace('_', ' ') }}</span></td><td>{{ item.attempt_count }}</td><td>{{ item.next_run_at.isoformat() }}</td><td>{{ item.updated_at.isoformat() }}</td></tr>
+          {% else %}
+            <tr><td colspan="5" class="empty">No tasks recorded.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

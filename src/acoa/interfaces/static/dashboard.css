@@ -1,0 +1,61 @@
+:root {
+  color-scheme: dark;
+  --bg: #0b1020;
+  --surface: #121a2e;
+  --surface-2: #17233d;
+  --line: #263552;
+  --text: #eef4ff;
+  --muted: #9aa9c2;
+  --accent: #64d7c6;
+  --accent-2: #8ba7ff;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; color: var(--text); background: radial-gradient(circle at 85% -10%, #233861 0, transparent 38%), var(--bg); }
+.topbar { display: flex; justify-content: space-between; gap: 2rem; align-items: end; padding: 3rem max(2rem, calc((100vw - 1320px) / 2)); border-bottom: 1px solid var(--line); }
+h1, h2, p { margin: 0; }
+h1 { margin-top: .35rem; font-size: clamp(2rem, 4vw, 3.5rem); letter-spacing: -.055em; }
+h2 { font-size: 1.15rem; }
+.eyebrow, .kicker { color: var(--accent); font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.timestamp { margin-top: .8rem; color: var(--muted); font-size: .82rem; }
+.search { width: min(100%, 440px); }
+.search label { display: block; margin-bottom: .5rem; color: var(--muted); font-size: .8rem; }
+.search-row { display: flex; }
+input, button { min-height: 42px; border: 1px solid var(--line); font: inherit; }
+input { flex: 1; min-width: 0; padding: 0 .85rem; color: var(--text); background: #0d1528; border-radius: .65rem 0 0 .65rem; }
+button { padding: 0 1rem; color: #071511; font-weight: 800; background: var(--accent); border-color: var(--accent); border-radius: 0 .65rem .65rem 0; cursor: pointer; }
+main { width: min(1320px, calc(100% - 4rem)); margin: 2rem auto 4rem; }
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1rem; }
+.metrics article, .panel { background: color-mix(in srgb, var(--surface) 94%, transparent); border: 1px solid var(--line); border-radius: 1rem; box-shadow: 0 20px 45px rgba(0,0,0,.16); }
+.metrics article { padding: 1.1rem 1.25rem; }
+.metrics span { display: block; color: var(--muted); font-size: .78rem; }
+.metrics strong { display: block; margin-top: .35rem; font-size: 1.8rem; color: var(--accent); }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+.panel { min-width: 0; padding: 1.25rem; }
+.wide { margin-top: 1rem; }
+.panel-heading { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1rem; }
+.panel-heading h2 { margin-top: .2rem; }
+.panel-heading > span { color: var(--muted); font-size: .78rem; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+th { color: var(--muted); font-size: .68rem; letter-spacing: .08em; text-align: left; text-transform: uppercase; }
+th, td { padding: .8rem .65rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+td small { display: block; max-width: 24ch; margin-top: .28rem; overflow: hidden; color: var(--muted); font-size: .68rem; text-overflow: ellipsis; }
+.status { display: inline-block; padding: .22rem .48rem; color: #b9fff3; background: rgba(100,215,198,.12); border: 1px solid rgba(100,215,198,.28); border-radius: 999px; font-size: .72rem; }
+.stack { display: grid; gap: .7rem; margin: 0; padding: 0; list-style: none; }
+.stack li { padding: .8rem; background: var(--surface-2); border-radius: .7rem; }
+.stack strong, .stack span, .stack time { display: block; }
+.stack span, .stack time { margin-top: .25rem; color: var(--muted); font-size: .74rem; overflow-wrap: anywhere; }
+.performance { display: grid; grid-template-columns: repeat(2, 1fr); gap: .7rem; margin: 0; }
+.performance div { padding: .8rem; background: var(--surface-2); border-radius: .7rem; }
+.performance dt { color: var(--muted); font-size: .74rem; }
+.performance dd { margin: .35rem 0 0; font-size: 1.25rem; font-weight: 750; }
+.empty { padding: 1.4rem !important; color: var(--muted); text-align: center; }
+
+@media (max-width: 800px) {
+  .topbar { align-items: stretch; flex-direction: column; padding: 2rem 1.25rem; }
+  main { width: calc(100% - 2rem); }
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .grid { grid-template-columns: 1fr; }
+}

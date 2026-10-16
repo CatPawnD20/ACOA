@@ -1,0 +1,6 @@
+# EP-07.01: F-12.03/F-12.06; E-08.04/E-08.06; P-22; ADR-010.
+fastapi==0.143.2
+Jinja2==3.1.6
+SQLAlchemy==2.1.4
+psycopg[binary]==3.3.6
+uvicorn==0.54.0
