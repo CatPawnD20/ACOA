@@ -342,6 +342,54 @@ class MailDraftReceipt:
         require_timestamp(self.recorded_at)
 
 
+@dataclass(frozen=True, slots=True)
+class MailSentRecord:
+    """A provider sent-record observation; acceptance does not prove delivery or reading."""
+
+    source_ref: UUID
+    attempt_id: UUID
+    application_id: UUID
+    draft_id: UUID
+    provider_id: UUID
+    provider: str
+    message: MailMessageRef
+    observed_at: datetime
+
+    def __post_init__(self) -> None:
+        for identifier in (
+            self.source_ref,
+            self.attempt_id,
+            self.application_id,
+            self.draft_id,
+            self.provider_id,
+        ):
+            require_identifier(identifier)
+        require_provider_name(self.provider)
+        if not isinstance(self.message, MailMessageRef):
+            raise DomainError("A mail sent record requires validated provider identifiers.")
+        require_timestamp(self.observed_at)
+
+
+def mail_sent_record_sha256(record: MailSentRecord) -> str:
+    if not isinstance(record, MailSentRecord):
+        raise DomainError("A validated mail sent record is required.")
+    value = "\x1f".join(
+        (
+            "acoa-mail-sent-record/1",
+            str(record.source_ref),
+            str(record.attempt_id),
+            str(record.application_id),
+            str(record.draft_id),
+            str(record.provider_id),
+            record.provider,
+            record.message.provider_message_id,
+            record.message.provider_thread_id,
+            record.observed_at.astimezone(UTC).isoformat(),
+        )
+    )
+    return sha256(value.encode("utf-8")).hexdigest()
+
+
 def mail_change_sha256(account_id: UUID, provider: str, change: MailChange) -> str:
     require_identifier(account_id)
     require_provider_name(provider)
