@@ -1,6 +1,6 @@
 # ACOA current active-file integrity manifest
 
-Calculated on 2026-10-16 after EP-08.04 synthetic browser submission verification.
+Calculated on 2026-10-16 after EP-08.05 optional browser-guidance verification.
 Scope: active root, docs, tasks, src, tests, deployment and .github files.
 Excludes archived originals, this manifest, ignored secrets, environments and caches.
 The original workspace baseline remains preserved in archive/legacy-docs/SHA256SUMS.original-workspace.md.
@@ -58,11 +58,12 @@ df45ebd5b44da9ffcfe11c97b0fe4fffe260677481c70c0a0f124bdfcb9d969d  docs/L1-capabi
 166327eb76b6e60e46f3358e0767d270bb76f4155a8afd774c4b6a99db8e0c6a  docs/README.md
 6cd46f98085099bf7a0b9a3d7aaa1a18800c8283c724bfe0651269fc4eb87a0f  docs/workspace-audit.md
 1760cbaa9181faf297de97c29dd6431e1d48c6a2929b825a40ff0a308afb25d6  pyproject.toml
-8430c94fc341db6da3551a1cdf01d248adef38a552c95085df0e8b596b25efc9  README.md
+1cc121233e318585ece9ac84c4ffe1b72f148acacc49cc464fd8729c14b5a79b  README.md
 aab65353362d0a5ba62427a44ec866a6c86c2de4b552e6a7895099b2f41a771d  src/acoa/__init__.py
 e9d6492f4ae56d69a793767c0de5f7e3c7c8ff8b968d3b7a120bf02a10eff356  src/acoa/application/__init__.py
 2e3d72725729e654331236340153df8ea59f3c55f7d8682c3a23b5c6f1ad9258  src/acoa/application/artifact_backup.py
 cd1e76ba335c44b2eaf0f4aca08f0d05acf9a20bec19e3792531f720da89afce  src/acoa/application/artifacts.py
+b55219e31fc0ec5695e2d79a53d9729efb5d7358b9c9f2e40a1bd34e6cba893c  src/acoa/application/browser_guidance.py
 25f3fc26a17558a8c425f1bbbd4fc65583cf96e493267cd3f8f338102a60e544  src/acoa/application/browser_isolation.py
 3b41d9c1eb344a2f626f27c85364267cb1ceccf669410af7e0fd6916a414ff59  src/acoa/application/browser_submission.py
 17aaf8581ce5b1abb030bc3085267b8692793e7b3b76584163469cdb247afd30  src/acoa/application/browser_workflow.py
@@ -205,5 +206,6 @@ f18767d4c1a990b6e984f7d8fbb22775f2f45148369a29bf837ed88c2be8417d  tasks/EP-07.02
 fb40ef18dd620c586186bf2855eb2c7ee5f26c7db9fa39695f585e92fbff0df1  tasks/EP-08.02-browser-worker-isolation.md
 5eb3834489a536f2277ef2cca57674ac709317d54e87bac54dabc3a3b210585f  tasks/EP-08.03-career-accounts.md
 2b3054cd29e7fe0f5f19c5f20f75700864e6e042765aec7685182b79600a5460  tasks/EP-08.04-synthetic-browser-submission.md
+46a88593da2c8317d2ca46dfeaf14182c9874810162b984b106910d1115eaf9f  tasks/EP-08.05-optional-browser-guidance.md
 5229ff396803f9cf0acd617b881df74908e60c7ebac4a4089bc59a8d16e53752  tests/test_config.py
 32485ef75d6723fb4e72e7ec9342c19f4c9803292d9cafe714b0e4102fd4d68f  tests/test_package_smoke.py
