@@ -156,6 +156,11 @@ remains unresolved, so current plans must remain replay-only with zero external 
 `0024_experiment_comparisons` records same-dataset baseline/candidate results and
 reversible strategy selections. A selection is audit evidence only; it does not enable
 live rollout or mutate the active production strategy.
+`0025_generated_tool_records` stores immutable generated-tool requests, executions and
+mediated planning proposals. Each record retains exact source, input, output and worker
+image hashes. The application role may insert and read this audit history but cannot
+update or delete it. Proposal kinds are restricted to source queries, research priorities
+and strategy notes; these records cannot authorize or execute an external action.
 
 EP-05.04 provides a provider-neutral local filesystem adapter and logical artifact
 backup/restore verification. Callers must select a dedicated root explicitly. Storage
@@ -224,6 +229,13 @@ Generated source may define only `transform(payload)`, cannot import modules, an
 in a separate isolated Python child with a small safe builtin set. Output must be one
 bounded JSON object. The worker exposes no external-action, database or installation
 interface.
+
+Application code must treat every sandbox result as untrusted. EP-09.04 validates the
+versioned output schema, request lifetime, resource ceiling and exact source/input/output
+hash binding before creating an inert proposal. Unknown fields, duplicate targets and
+action-like proposal kinds fail closed. Persisting a proposal records an audit fact only;
+any later external operation must independently use the central Policy/Budget Gate and
+External Action Executor.
 
 Use the one-shot maintenance container to keep the database port unpublished:
 
