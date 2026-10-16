@@ -140,6 +140,9 @@ plus separate provider-draft receipts. These tables contain no sent-state transi
 the application role has read/insert-only access.
 `0019_mail_sent_records` links one initial-mail attempt to its provider message and
 thread identifiers as immutable acceptance evidence. It does not claim delivery or read.
+`0020_mail_notifications` adds immutable reply classifications, deduplicated pending
+important-reply notification items and closed-window mail digests. It does not deliver
+notifications or schedule report windows.
 
 EP-05.04 provides a provider-neutral local filesystem adapter and logical artifact
 backup/restore verification. Callers must select a dedicated root explicitly. Storage

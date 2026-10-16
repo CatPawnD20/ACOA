@@ -54,6 +54,8 @@ as immutable records. It supplies no sent state and no reply/follow-up send path
 `0019_mail_sent_records` stores one immutable provider sent-record observation per
 initial attempt and draft, preserving message/thread relationships without claiming
 delivery or reading.
+`0020_mail_notifications` stores evidence-bound reply classifications, one pending
+important-reply notification per mailbox event and immutable closed-window mail digests.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 
