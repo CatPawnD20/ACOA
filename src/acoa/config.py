@@ -98,10 +98,15 @@ class BudgetLimits:
 @dataclass(frozen=True, slots=True)
 class AuthorizationReference:
     grant_id: UUID | None = field(default=None, repr=False)
+    limit_policy_id: UUID | None = field(default=None, repr=False)
 
     def __post_init__(self) -> None:
-        if self.grant_id is not None and not isinstance(self.grant_id, UUID):
-            raise ConfigurationError("authorization.grant_id must be a UUID or unset.")
+        for name, value in (
+            ("grant_id", self.grant_id),
+            ("limit_policy_id", self.limit_policy_id),
+        ):
+            if value is not None and not isinstance(value, UUID):
+                raise ConfigurationError(f"authorization.{name} must be a UUID or unset.")
 
 
 @dataclass(frozen=True, slots=True)
@@ -217,16 +222,25 @@ def _parse_budget(data: Mapping[str, object]) -> BudgetLimits:
 
 
 def _parse_authorization(data: Mapping[str, object]) -> AuthorizationReference:
-    section = _section(data, "authorization", ("grant_id",))
-    value = section.get("grant_id")
-    if value is None:
-        return AuthorizationReference()
-    if not isinstance(value, str):
-        raise ConfigurationError("authorization.grant_id must be a UUID string or unset.")
-    try:
-        return AuthorizationReference(grant_id=UUID(value))
-    except ValueError:
-        raise ConfigurationError("authorization.grant_id must be a UUID string or unset.") from None
+    section = _section(data, "authorization", ("grant_id", "limit_policy_id"))
+
+    def reference(name: str) -> UUID | None:
+        value = section.get(name)
+        if value is None:
+            return None
+        if not isinstance(value, str):
+            raise ConfigurationError(f"authorization.{name} must be a UUID string or unset.")
+        try:
+            return UUID(value)
+        except ValueError:
+            raise ConfigurationError(
+                f"authorization.{name} must be a UUID string or unset."
+            ) from None
+
+    return AuthorizationReference(
+        grant_id=reference("grant_id"),
+        limit_policy_id=reference("limit_policy_id"),
+    )
 
 
 def _parse_items(value: object, name: str) -> tuple[str, ...]:

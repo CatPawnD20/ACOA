@@ -166,6 +166,10 @@ windowed assessments and durable pending alerts. A local dependency failure crea
 isolation decision without changing global authority. A systemic-risk decision atomically
 sets Policy Authority to paused, dry-run operation with external actions disabled. The
 migration and repository do not send a notification or start a monitoring service.
+`0027_activation_readiness` stores immutable pre-activation configuration assessments.
+Each assessment is recomputed while the current Policy Authority row is locked and binds
+only exact profile/goal/channel hashes, revisions and structured blocker codes. It stores
+no profile values, account addresses, provider credentials or secret material.
 
 EP-05.04 provides a provider-neutral local filesystem adapter and logical artifact
 backup/restore verification. Callers must select a dedicated root explicitly. Storage
@@ -386,6 +390,21 @@ explicitly replay-safe work may be scheduled again within its attempt bound, whi
 non-replayable external-action task is blocked for review. There is no continuously running
 API, scheduler or worker in the current repository, so process signal wiring belongs to the
 future concrete service entry point.
+
+## Pre-activation readiness
+
+EP-10.04 evaluates current approved profile and goals, the exact grant and limit-policy
+references, declared channels/accounts and terms evidence, positive quota/budget limits,
+currency and permitted data categories. Daily/weekly and daily/monthly limits must remain
+ordered. Every configured channel and account must be covered by the grant and have a
+current terms-evidence binding.
+
+A successful result is `ready_for_pilot`; it is not production authorization. Readiness
+requires `dry_run=true` and `external_actions_enabled=false`, and the central Policy Gate
+also requires the configured limit-policy identity to match the approved grant. Only the
+later pilot and explicit activation tasks may change operating mode. The current local
+assessment is `blocked` because no real profile, goals, grant, quota or budget declarations
+have been supplied. No personal value is needed to report those blocker codes.
 
 ## Verified behavior and limits
 

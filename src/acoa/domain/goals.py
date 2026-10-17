@@ -1,11 +1,12 @@
 """EP-01.01 user goals and immutable hard/soft conditions; F-01.02/03/06; P-03."""
 
 from dataclasses import dataclass, field, replace
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import StrEnum
 from uuid import UUID
 
 from acoa.domain.profile import ProfileVariant, variant_is_usable
+from acoa.domain.reviews import content_digest
 from acoa.domain.values import (
     DomainError,
     require_identifier,
@@ -90,6 +91,25 @@ class UserGoals:
         require_version(self.version)
         validate_hard_conditions(self.hard_constraints)
         validate_condition_set(self.soft_preferences)
+
+
+def goals_content_sha256(goals: UserGoals) -> str:
+    """Bind readiness and experiments to one exact goal version without exposing values."""
+    return content_digest(
+        {
+            "goals_id": str(goals.goals_id),
+            "version": goals.version,
+            "updated_at": goals.updated_at.astimezone(UTC).isoformat(),
+            "hard_constraints": [
+                [condition.dimension.value, condition.operator.value, list(condition.values)]
+                for condition in goals.hard_constraints
+            ],
+            "soft_preferences": [
+                [condition.dimension.value, condition.operator.value, list(condition.values)]
+                for condition in goals.soft_preferences
+            ],
+        }
+    )
 
 
 def revise_goals(

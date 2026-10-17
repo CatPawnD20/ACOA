@@ -173,6 +173,7 @@ def check_grant(request: PolicyRequest, context: PolicyContext) -> ReasonCode | 
         return ReasonCode.GRANT_NOT_CURRENT
     if (
         context.settings.authorization.grant_id != grant.grant_id
+        or context.settings.authorization.limit_policy_id != grant.limit_policy_id
         or request.action not in grant.actions
         or request.channel not in grant.channels
         or request.recipient_id not in grant.recipient_ids

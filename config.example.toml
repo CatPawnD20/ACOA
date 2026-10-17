@@ -11,8 +11,10 @@ external_actions_enabled = false
 # Currency and all caps must be explicitly configured before readiness can pass.
 [budget]
 
-# A future PostgreSQL authorization record reference, not a grant created by this file.
+# Future PostgreSQL grant and exact quota-policy references, not authority created here.
 [authorization]
+# grant_id = "<current-grant-uuid>"
+# limit_policy_id = "<approved-limit-policy-uuid>"
 
 [accounts]
 authorized_emails = []
