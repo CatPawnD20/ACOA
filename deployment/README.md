@@ -161,6 +161,11 @@ mediated planning proposals. Each record retains exact source, input, output and
 image hashes. The application role may insert and read this audit history but cannot
 update or delete it. Proposal kinds are restricted to source queries, research priorities
 and strategy notes; these records cannot authorize or execute an external action.
+`0026_operational_health` stores immutable dependency health observations, deterministic
+windowed assessments and durable pending alerts. A local dependency failure creates an
+isolation decision without changing global authority. A systemic-risk decision atomically
+sets Policy Authority to paused, dry-run operation with external actions disabled. The
+migration and repository do not send a notification or start a monitoring service.
 
 EP-05.04 provides a provider-neutral local filesystem adapter and logical artifact
 backup/restore verification. Callers must select a dedicated root explicitly. Storage
@@ -365,6 +370,22 @@ Recovery bundles contain personal application data even though they contain no s
 files. Store them with restricted access and encryption appropriate to the destination.
 The committed configuration supplies neither remote storage nor encryption/key management.
 Never restore into an unrelated project or a deployment that has started application work.
+
+## Operational health and graceful shutdown
+
+EP-10.03 evaluates one dependency at a time against an explicit failure count and time
+window. Healthy observations continue, a degraded latest observation produces a warning,
+an unavailable latest observation or exhausted error budget isolates that dependency, and
+any systemic-risk observation enters global safe mode. Stored assessments are recomputed
+from their exact evidence before persistence, so callers cannot forge a less restrictive
+response. Alerts are durable pending records for a later notification adapter.
+
+Before a worker process exits, it must call `preserve_task_for_shutdown` with its fenced
+lease identity. The queue records `lease_expired` and applies the existing task policy:
+explicitly replay-safe work may be scheduled again within its attempt bound, while a
+non-replayable external-action task is blocked for review. There is no continuously running
+API, scheduler or worker in the current repository, so process signal wiring belongs to the
+future concrete service entry point.
 
 ## Verified behavior and limits
 

@@ -66,6 +66,11 @@ the separately injected material and secret stores.
 with explicit cohort, strategy, case, external-impact, cost and rollback bindings.
 `0024_experiment_comparisons` adds immutable fixed-scope baseline/candidate comparisons
 and one append-only reversible strategy-selection record per comparison.
+`0025_generated_tool_records` stores immutable generated-tool requests, executions and
+mediated planning proposals without granting an external-action path.
+`0026_operational_health` stores immutable dependency observations and deterministic
+assessments plus pending alert records. A systemic-risk assessment and its Policy
+Authority safe-mode transition share one application transaction.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 
