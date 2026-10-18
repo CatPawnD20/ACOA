@@ -415,3 +415,41 @@ Official references: [PostgreSQL image](https://hub.docker.com/_/postgres),
 [Compose secrets](https://docs.docker.com/compose/how-tos/use-secrets/),
 [internal networks](https://docs.docker.com/reference/compose-file/networks/), and
 [default privileges](https://www.postgresql.org/docs/18/sql-alterdefaultprivileges.html).
+
+## Controlled Gmail pilot preparation
+
+EP-10.05 keeps Gmail dependencies separate from the base application. Install the pinned
+integration set into the local virtual environment only when preparing the controlled
+pilot:
+
+```powershell
+.venv\Scripts\python.exe -m pip install -r deployment\gmail-requirements.txt
+```
+
+Create a Desktop OAuth client in a Google Cloud project with the Gmail API enabled. Put
+the downloaded client JSON under the ignored `credentials/` directory. Never paste its
+contents into source, task records, logs or chat. Generate a create-only local token with
+the exact `gmail.readonly` and `gmail.compose` scopes:
+
+```powershell
+.venv\Scripts\python.exe deployment\gmail_oauth.py `
+  --client-secrets credentials\gmail-client.json `
+  --token-output credentials\gmail-token.json
+```
+
+The browser callback binds only to `127.0.0.1`; the script refuses to overwrite an
+existing token and prints no token material. The authenticated transport uses a fixed
+Gmail API origin, explicit per-request timeouts and redacted HTTP errors. Refreshed tokens
+are replaced atomically in the same ignored path.
+
+The pilot sender is registered as an `InteractionAdapter` behind the existing committed
+Executor boundary. It accepts one approved, current controlled target and one exact
+initial-application draft. Reply and follow-up actions have no send route. Reconciliation
+performs only a Sent-mail search using the attempt-specific RFC Message-ID. Cancellation
+is permitted only in `prepared` or `reserved`; after provider I/O may have started, the
+attempt remains reconcilable and cannot be relabelled cancelled.
+
+Do not run the live call until activation readiness is `ready_for_pilot`, the exact sender
+and recipient are both controlled by the user, the content-bound target approval has been
+recorded, and the central reserve/execute policy checks succeed. A pilot acknowledgement
+proves provider acceptance only. Delivery or reading requires separate evidence.

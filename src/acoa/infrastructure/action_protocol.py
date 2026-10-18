@@ -329,6 +329,36 @@ class ActionProtocol:
             {"id": attempt_id},
         )
 
+    def cancel_before_execution(self, attempt_id: UUID, evidence_id: UUID) -> ActionCheck:
+        """Cancel only while provider I/O is impossible; retain an immutable audit fact."""
+        require_identifier(evidence_id)
+        _, _, _, row, _ = self.lock_attempt(attempt_id)
+        state = ActionState(row["state"])
+        if state is ActionState.CANCELLED:
+            return ActionCheck(state)
+        if state not in (ActionState.PREPARED, ActionState.RESERVED):
+            return ActionCheck(state)
+        if state is ActionState.RESERVED:
+            self._cancel_reserved(attempt_id)
+        else:
+            self.connection.execute(
+                text("""UPDATE acoa.external_action_attempts SET state = 'cancelled',
+                    updated_at = clock_timestamp() WHERE attempt_id = :id"""),
+                {"id": attempt_id},
+            )
+        self.connection.execute(
+            text("""INSERT INTO acoa.external_action_cancellations
+                (cancellation_id,attempt_id,prior_state,evidence_id)
+                VALUES (:id,:attempt,:prior,:evidence)"""),
+            {
+                "id": uuid4(),
+                "attempt": attempt_id,
+                "prior": state.value,
+                "evidence": evidence_id,
+            },
+        )
+        return ActionCheck(ActionState.CANCELLED)
+
     def begin_execution(self, attempt_id: UUID) -> ActionCheck:
         """Commit this linearization point before any provider call; never return a second token."""
         revision, authority, prepared, row, application = self.lock_attempt(attempt_id)

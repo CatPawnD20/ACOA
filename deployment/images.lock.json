@@ -1,6 +1,6 @@
 {
   "schema": "acoa-portable-images/1",
-  "source_set_sha256": "c5eba0193143b4ad7fba7d36e0585aec7c1895a8e2d0d2cfde2880273591b3c1",
+  "source_set_sha256": "3b361ab83ce9409f43c227878293d841e8174c147130e5fead273ee75b46b1ca",
   "images": {
     "postgres": {
       "reference": "postgres:18.6-trixie@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336",
@@ -9,7 +9,7 @@
     },
     "migration": {
       "reference": "acoa-dev-acoa-migrate:latest",
-      "image_id": "sha256:1613107a0bda44ae419163633b375d6d23d89b65eb58d8cf5b0ff17b2288a691",
+      "image_id": "sha256:818ef216d9675294d0db60457398a42ddbcbd209eebb9146349066d49b0e478c",
       "platform": "linux/amd64"
     },
     "browser": {

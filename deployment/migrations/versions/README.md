@@ -74,6 +74,8 @@ Authority safe-mode transition share one application transaction.
 `0027_activation_readiness` stores immutable pre-activation assessments bound to exact
 authority, profile, goal and channel-configuration hashes. Its payload contains blocker
 codes and opaque identities rather than profile values, account addresses or secrets.
+`0028_controlled_pilot` stores immutable evidence for cancellation before provider I/O.
+Executing or completed attempts cannot be relabelled as cancelled.
 Review SQL, privilege implications and recovery behavior before applying any
 revision. Do not edit applied revisions or create empty baseline revisions.
 
