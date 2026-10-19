@@ -225,7 +225,11 @@ def _authority_blockers(
     except ValueError:
         blockers.add("privacy.unknown_data_category")
     else:
-        if not set(grant.data_categories) <= allowed_categories:
+        if not settings.privacy.data_sharing_enabled and (
+            allowed_categories or grant.data_categories
+        ):
+            blockers.add("privacy.data_sharing_disabled_scope_not_empty")
+        elif not set(grant.data_categories) <= allowed_categories:
             blockers.add("privacy.grant_scope_not_allowed")
     if Channel.EMAIL in grant.channels and not settings.accounts.authorized_emails:
         blockers.add("channels.authorized_email_missing")

@@ -124,9 +124,11 @@ class AccountSettings:
 @dataclass(frozen=True, slots=True)
 class PrivacySettings:
     allowed_data_categories: tuple[str, ...] = field(default=(), repr=False)
+    data_sharing_enabled: bool = True
 
     def __post_init__(self) -> None:
         _validate_items(self.allowed_data_categories, "privacy.allowed_data_categories")
+        _boolean(self.data_sharing_enabled, "privacy.data_sharing_enabled")
 
 
 @dataclass(frozen=True, slots=True)
@@ -273,11 +275,14 @@ def _parse_accounts(data: Mapping[str, object]) -> AccountSettings:
 
 
 def _parse_privacy(data: Mapping[str, object]) -> PrivacySettings:
-    section = _section(data, "privacy", ("allowed_data_categories",))
+    section = _section(data, "privacy", ("allowed_data_categories", "data_sharing_enabled"))
     return PrivacySettings(
         allowed_data_categories=_parse_items(
             section.get("allowed_data_categories", []), "privacy.allowed_data_categories"
-        )
+        ),
+        data_sharing_enabled=_boolean(
+            section.get("data_sharing_enabled", True), "privacy.data_sharing_enabled"
+        ),
     )
 
 
@@ -370,10 +375,15 @@ def _permission_configuration_blockers(settings: Settings) -> tuple[str, ...]:
     for name, value in (
         ("authorization.grant_id", settings.authorization.grant_id),
         ("accounts.authorized_emails", settings.accounts.authorized_emails),
-        ("privacy.allowed_data_categories", settings.privacy.allowed_data_categories),
     ):
         if not value:
             blockers.append(name)
+    categories = settings.privacy.allowed_data_categories
+    if settings.privacy.data_sharing_enabled:
+        if not categories:
+            blockers.append("privacy.allowed_data_categories")
+    elif categories:
+        blockers.append("privacy.allowed_data_categories_must_be_empty")
     return tuple(blockers)
 
 

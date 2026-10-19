@@ -1,6 +1,6 @@
 # ACOA current active-file integrity manifest
 
-Calculated on 2026-10-19 after Codex-only execution-limit verification.
+Calculated on 2026-10-19 after zero-data pilot-scope verification.
 Scope: active root, docs, tasks, src, tests, deployment and .github files.
 Excludes archived originals, this manifest, ignored secrets, environments and caches.
 The original workspace baseline remains preserved in archive/legacy-docs/SHA256SUMS.original-workspace.md.
@@ -11,8 +11,8 @@ SHA-256  current relative path
 6e5e560c890c2602f188163137fb29b76489e9656d3fc143bb4b6776d7701ced  .github/workflows/ci.yml
 a92cb454536a48f99afac623a2a882acda04ddd3e585871eb36b01a1cd629e50  .gitignore
 e3b5a21d4f55780aa436f9d23462635dae0ff2a2b77430937d79dc7f0b955f69  AGENTS.md
-d911539309c8fd34f094f4a57a3eefd8ba782a37387fc75eb435dc4083c6e792  README.md
-8b7e955fe5913209ab992bd2f4e7c5d017bbbb202077beca2f1d6ab0d688c3a7  config.example.toml
+f96723b5c188cc48de2b1ac1a3c0919ca265d05544d301af00eb4aafa53ec18f  README.md
+90b033787c6e1e16e257aafb32d05da251095a14e57b179e96933d2b7eb23441  config.example.toml
 908fb336a731a1ae40776ccee48ce76a239ab46f011080e7c02f3736180e0e42  deployment/.dockerignore
 4f9d008a58a9d7c23275622016fab9ef971d53d0a350bb1d5834706754786c6e  deployment/README.md
 77720a47a1ca4da8a4603b94a6dee27da971c92d645be56c8f281dd3364e1444  deployment/alembic.ini
@@ -110,7 +110,7 @@ b72a60f54f11e72ee6761c9e83666a3f65938fab284510c283a5dfd7e0a11acb  src/acoa/appli
 213ca9f7821626f1fe5157527f61dc09c893fc3b12cb0f6c8150ca4e1cb13aed  src/acoa/application/policy_inputs.py
 a71cd959a621e1c8e310ec257bf744ae45f8b1bf30a3e4afa98eb77cc5373af0  src/acoa/application/research.py
 316f00de50a293e7d75674bbba133981d409c47b0a5b8fcb649ec009363a962c  src/acoa/application/verification.py
-593fc54168c0dc63d38d72088794b54baec86c8bccaff7122b2017163afe8aba  src/acoa/config.py
+f239417aecd3ae8159df23b428dcf39e3efd6487314446d205f706a2b7a088e7  src/acoa/config.py
 6301c5554440a4a797becf206294c322608937683054ce1bd3524963fdf4c1d0  src/acoa/domain/__init__.py
 de4e7a11ea51cc5ff9f18c15b5ca53c9be5ec4e1328536dc81d8003a6c8982b2  src/acoa/domain/action_requests.py
 d2f8906292d15e4b86214c0308fb98f818ab6e6d1334a024905c024eb045cecb  src/acoa/domain/actions.py
@@ -141,7 +141,7 @@ ce49148f16569deb70f520835fefa1b383f6407c9b2207237ab32584705e59ce  src/acoa/domai
 5f8ed3a90bf3c1795653b883237e45e5e15371bdeaf31e1a73f7bd898bbc3a72  src/acoa/domain/operations.py
 f2bf9e29e2a552922ba85436ad242d0ac5ef644fb026f0e5a460bbd41a6e9eed  src/acoa/domain/pilot.py
 f520a62b2aec302c4d68350f2805086a151c350d0fc59e382285503adc910469  src/acoa/domain/profile.py
-b52a22d81f4900058adeb83acece4b595b67a0b6c2cdb52688809e3f49c388f4  src/acoa/domain/readiness.py
+de6b9d6af5cfd11120dbe1348aee3eca673404f92c1691c554b347ef75cfa18c  src/acoa/domain/readiness.py
 c9bbf8905109cd85a28bdb70691286d3f94d05f97c269512d56a32ccaafb09c7  src/acoa/domain/research.py
 b87d9807743652d486d89787648a59e1cbe8f246be73ba652898a1da67feb735  src/acoa/domain/reviews.py
 6ba73cfd3197e9299c979d282ad6962a9faec8f7570d87ce9885495dc2deab54  src/acoa/domain/submission_evidence.py
@@ -250,5 +250,6 @@ c7a1861a0ab7054af69fc75c0a8f082ddefe4cc897e330ffb78a4027b3a3cefc  tasks/EP-10.03
 5358fc4daa0e312ce75a78762ff57a429cc6892426fb2dab53919ea22d1fec2d  tasks/EP-10.04-activation-readiness.md
 2025d71135c187169cfa12c2d815aacc010897c2a434c7574bbca00b064f3a9f  tasks/EP-10.04-codex-execution-limits.md
 d15748979edc9f6fe7e9538dfc66ef8a1e797fc3c978decfd1fad26ed661772d  tasks/EP-10.05-controlled-live-pilot.md
+651bb6b2b23e98888720853152f6e35f17d0386502142472082bfd5707d17288  tasks/EP-10.05-zero-data-pilot.md
 5229ff396803f9cf0acd617b881df74908e60c7ebac4a4089bc59a8d16e53752  tests/test_config.py
 32485ef75d6723fb4e72e7ec9342c19f4c9803292d9cafe714b0e4102fd4d68f  tests/test_package_smoke.py

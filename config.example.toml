@@ -23,4 +23,6 @@ external_actions_enabled = false
 authorized_emails = []
 
 [privacy]
+# Set false only for an explicitly empty data-sharing scope.
+# data_sharing_enabled = false
 allowed_data_categories = []

@@ -127,6 +127,8 @@ Authenticated review ingestion and durable profile history remain later work.
 - Until explicitly configured, `dry_run=true` and `external_actions_enabled=false` remain hard requirements.
 - Codex-only execution can disable paid services with explicit zero monetary caps. Its
   no-progress timeout must be positive and cannot exceed the absolute per-task time cap.
+- Zero-data controlled actions use `privacy.data_sharing_enabled=false` with an explicitly
+  empty category list; enabling data sharing still requires a nonempty bounded allowlist.
 - The development environment must not inherit production secrets.
 
 ## Directory map
