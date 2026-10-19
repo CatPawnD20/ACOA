@@ -44,6 +44,7 @@ class Requirement(StrEnum):
     COMPANY_CHANNEL_TRUST = "company_channel_trust"
     ACCOUNT_OWNERSHIP = "account_ownership"
     CORPORATE_RECIPIENT = "corporate_recipient"
+    RECIPIENT_CLASS_ENROLLED = "recipient_class_enrolled"
     OPT_OUT_CLEAR = "opt_out_clear"
     DUPLICATE_CLEAR = "duplicate_clear"
     SUBMISSION_STATE_CLEAR = "submission_state_clear"

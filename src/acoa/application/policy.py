@@ -171,12 +171,18 @@ def check_grant(request: PolicyRequest, context: PolicyContext) -> ReasonCode | 
         return ReasonCode.POLICY_VERSION_MISMATCH
     if evidence_status(context, Requirement.AUTHORIZATION_CURRENT) is not EvidenceStatus.SATISFIED:
         return ReasonCode.GRANT_NOT_CURRENT
+    recipient_allowed = request.recipient_id in grant.recipient_ids
+    if not recipient_allowed and grant.recipient_classes:
+        recipient_allowed = (
+            evidence_status(context, Requirement.RECIPIENT_CLASS_ENROLLED)
+            is EvidenceStatus.SATISFIED
+        )
     if (
         context.settings.authorization.grant_id != grant.grant_id
         or context.settings.authorization.limit_policy_id != grant.limit_policy_id
         or request.action not in grant.actions
         or request.channel not in grant.channels
-        or request.recipient_id not in grant.recipient_ids
+        or not recipient_allowed
         or request.account_id not in grant.account_ids
     ):
         return ReasonCode.GRANT_SCOPE_MISMATCH

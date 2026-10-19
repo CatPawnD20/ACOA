@@ -22,6 +22,7 @@ from acoa.domain.authorization import (
     AuthorizationGrant,
     Channel,
     DataCategory,
+    RecipientClass,
     SensitiveDataConsent,
 )
 from acoa.domain.reviews import ReviewDecision, UserReview
@@ -95,6 +96,10 @@ def decode_grant(value: object) -> AuthorizationGrant | None:
         timestamp(row["created_at"]),
         decode_review(row["approval"]),
         timestamp(row["revoked_at"]) if row["revoked_at"] is not None else None,
+        tuple(
+            RecipientClass(text_value(item))
+            for item in items(row.get("recipient_classes", []))
+        ),
     )
 
 

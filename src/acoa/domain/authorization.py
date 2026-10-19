@@ -72,6 +72,13 @@ class PermissionMode(StrEnum):
     DENY = "deny"
 
 
+class RecipientClass(StrEnum):
+    VERIFIED_OFFICIAL_APPLICATION_EMAIL = "verified_official_application_email"
+    VERIFIED_PUBLIC_CORPORATE_RECRUITING_CONTACT = (
+        "verified_public_corporate_recruiting_contact"
+    )
+
+
 def validate_scope(values: tuple[object, ...], item_type: type) -> None:
     """Reject wildcard coercion, mutable scopes, duplicates and unknown enum values."""
     if not isinstance(values, tuple) or any(not isinstance(value, item_type) for value in values):
@@ -110,6 +117,7 @@ class AuthorizationGrant:
     created_at: datetime
     approval: UserReview | None = field(default=None, repr=False)
     revoked_at: datetime | None = None
+    recipient_classes: tuple[RecipientClass, ...] = ()
 
     def __post_init__(self) -> None:
         require_identifier(self.grant_id)
@@ -123,27 +131,29 @@ class AuthorizationGrant:
         validate_scope(self.recipient_ids, UUID)
         validate_scope(self.account_ids, UUID)
         validate_scope(self.data_categories, DataCategory)
+        validate_scope(self.recipient_classes, RecipientClass)
         if self.approval is not None:
             validate_grant_approval(self, self.approval)
 
 
 def grant_content_sha256(grant: AuthorizationGrant) -> str:
     """Bind approval to exact action/account/recipient/data/limit-policy declarations."""
-    return content_digest(
-        {
-            "grant_id": str(grant.grant_id),
-            "version": grant.version,
-            "policy_version": grant.policy_version,
-            "starts_at": grant.starts_at.astimezone(UTC).isoformat(),
-            "expires_at": grant.expires_at.astimezone(UTC).isoformat(),
-            "actions": [action.value for action in grant.actions],
-            "channels": [channel.value for channel in grant.channels],
-            "recipients": [str(identifier) for identifier in grant.recipient_ids],
-            "accounts": [str(identifier) for identifier in grant.account_ids],
-            "data_categories": [category.value for category in grant.data_categories],
-            "limit_policy_id": str(grant.limit_policy_id),
-        }
-    )
+    payload: dict[str, object] = {
+        "grant_id": str(grant.grant_id),
+        "version": grant.version,
+        "policy_version": grant.policy_version,
+        "starts_at": grant.starts_at.astimezone(UTC).isoformat(),
+        "expires_at": grant.expires_at.astimezone(UTC).isoformat(),
+        "actions": [action.value for action in grant.actions],
+        "channels": [channel.value for channel in grant.channels],
+        "recipients": [str(identifier) for identifier in grant.recipient_ids],
+        "accounts": [str(identifier) for identifier in grant.account_ids],
+        "data_categories": [category.value for category in grant.data_categories],
+        "limit_policy_id": str(grant.limit_policy_id),
+    }
+    if grant.recipient_classes:
+        payload["recipient_classes"] = [item.value for item in grant.recipient_classes]
+    return content_digest(payload)
 
 
 def validate_grant_approval(grant: AuthorizationGrant, review: UserReview) -> None:
@@ -155,7 +165,9 @@ def validate_grant_approval(grant: AuthorizationGrant, review: UserReview) -> No
         raise DomainError("A grant requires affirmative user approval.")
     if grant.revoked_at is not None:
         raise DomainError("A revoked grant must not retain executable approval.")
-    if not all((grant.actions, grant.channels, grant.recipient_ids, grant.account_ids)):
+    if not all((grant.actions, grant.channels, grant.account_ids)) or not (
+        grant.recipient_ids or grant.recipient_classes
+    ):
         raise DomainError("An approved external-action grant requires complete bounded scopes.")
 
 

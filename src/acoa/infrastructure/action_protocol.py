@@ -79,6 +79,9 @@ def current_evidence_facts(
     facts[Requirement.AUTHORIZATION_CURRENT] = (
         EvidenceStatus.SATISFIED if authority.grant is not None else EvidenceStatus.UNKNOWN
     )
+    # Enrollment must be recomputed from current trusted production-target records.
+    # Until that repository exists, persisted proposal evidence cannot authorize a recipient.
+    facts[Requirement.RECIPIENT_CLASS_ENROLLED] = EvidenceStatus.UNKNOWN
     if evidence["expires_at"] <= context.now or evidence[
         "request_sha256"
     ] != request_binding_sha256(prepared.request):
