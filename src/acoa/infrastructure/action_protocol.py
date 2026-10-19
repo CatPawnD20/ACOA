@@ -31,7 +31,12 @@ from acoa.domain.applications import (
     ApplicationState,
     SubmissionState,
 )
-from acoa.domain.authorization import SENSITIVE_CATEGORIES, sensitive_consent_covers
+from acoa.domain.authorization import (
+    SENSITIVE_CATEGORIES,
+    ActionKind,
+    RecipientClass,
+    sensitive_consent_covers,
+)
 from acoa.domain.submission_evidence import IncidentKind
 from acoa.domain.values import require_identifier
 from acoa.infrastructure.action_usage import budget_usage, quota_usage
@@ -68,6 +73,7 @@ def decode_prepared(value: object) -> PreparedAction:
 
 
 def current_evidence_facts(
+    connection: Connection,
     context: PolicyContext,
     authority: PolicyAuthority,
     prepared: PreparedAction,
@@ -79,9 +85,9 @@ def current_evidence_facts(
     facts[Requirement.AUTHORIZATION_CURRENT] = (
         EvidenceStatus.SATISFIED if authority.grant is not None else EvidenceStatus.UNKNOWN
     )
-    # Enrollment must be recomputed from current trusted production-target records.
-    # Until that repository exists, persisted proposal evidence cannot authorize a recipient.
-    facts[Requirement.RECIPIENT_CLASS_ENROLLED] = EvidenceStatus.UNKNOWN
+    facts[Requirement.RECIPIENT_CLASS_ENROLLED] = recipient_enrollment_status(
+        connection, context, authority, prepared, application
+    )
     if evidence["expires_at"] <= context.now or evidence[
         "request_sha256"
     ] != request_binding_sha256(prepared.request):
@@ -95,6 +101,102 @@ def current_evidence_facts(
     if application["submission_state"] != SubmissionState.NOT_STARTED.value:
         facts[Requirement.SUBMISSION_STATE_CLEAR] = EvidenceStatus.VIOLATED
     return tuple(PolicyEvidence(requirement, status) for requirement, status in facts.items())
+
+
+def recipient_enrollment_status(
+    connection: Connection,
+    context: PolicyContext,
+    authority: PolicyAuthority,
+    prepared: PreparedAction,
+    application: RowMapping,
+) -> EvidenceStatus:
+    """Recompute the exact target enrollment and current opt-out state at each gate."""
+    grant = authority.grant
+    recipient_class = {
+        ActionKind.SUBMIT_INITIAL_APPLICATION: RecipientClass.VERIFIED_OFFICIAL_APPLICATION_EMAIL,
+        ActionKind.SEND_INITIAL_OUTREACH: (
+            RecipientClass.VERIFIED_PUBLIC_CORPORATE_RECRUITING_CONTACT
+        ),
+    }.get(prepared.request.action)
+    if (
+        grant is None
+        or recipient_class is None
+        or recipient_class not in grant.recipient_classes
+        or prepared.request.recipient_id is None
+    ):
+        return EvidenceStatus.UNKNOWN
+    enrolled: bool = connection.execute(
+        text("""SELECT EXISTS (
+            SELECT 1
+            FROM acoa.production_recipient_enrollments e
+            JOIN acoa.opportunity_versions o
+              ON o.opportunity_id=e.target_id AND o.version=e.target_version
+            JOIN acoa.contact_channel_versions c
+              ON c.channel_id=e.channel_id AND c.version=e.channel_version
+            JOIN acoa.employer_verification_versions v
+              ON v.verification_id=e.employer_verification_id
+             AND v.version=e.employer_verification_version
+            WHERE e.recipient_id=:recipient
+              AND e.recipient_class=:recipient_class
+              AND e.grant_id=:grant AND e.grant_version=:grant_version
+              AND e.organization_id=:organization AND e.target_id=:target
+              AND e.enrolled_at <= :now AND :now < e.valid_until
+              AND e.valid_until <= :grant_expires_at
+              AND o.organization_id=e.organization_id AND o.status='active'
+              AND o.content_sha256=e.target_content_sha256
+              AND (o.opportunity->'publication_evidence'->>'observed_at')::timestamptz <= :now
+              AND :now <
+                (o.opportunity->'publication_evidence'->>'valid_until')::timestamptz
+              AND NOT EXISTS (SELECT 1 FROM acoa.opportunity_versions newer
+                WHERE newer.opportunity_id=o.opportunity_id AND newer.version>o.version)
+              AND c.organization_id=e.organization_id
+              AND c.endpoint_sha256=e.endpoint_sha256
+              AND c.content_sha256=e.channel_content_sha256
+              AND c.eligible_for_initial_contact
+              AND c.channel->>'visibility'='public_corporate'
+              AND (
+                (:recipient_class='verified_official_application_email'
+                  AND o.kind='published_job'
+                  AND c.kind='general_application_email'
+                  AND c.channel->>'purpose'='general_application')
+                OR
+                (:recipient_class='verified_public_corporate_recruiting_contact'
+                  AND o.kind='unadvertised_prospect'
+                  AND c.kind='public_corporate_email'
+                  AND c.channel->>'purpose' IN
+                    ('recruiting','human_resources','relevant_department'))
+              )
+              AND (c.channel->'evidence'->>'observed_at')::timestamptz <= :now
+              AND :now < (c.channel->'evidence'->>'valid_until')::timestamptz
+              AND NOT EXISTS (SELECT 1 FROM acoa.contact_channel_versions newer
+                WHERE newer.channel_id=c.channel_id AND newer.version>c.version)
+              AND v.organization_id=e.organization_id AND v.status='verified'
+              AND v.content_sha256=e.employer_verification_sha256
+              AND v.assessed_at <= :now AND :now < v.valid_until
+              AND NOT EXISTS (SELECT 1 FROM acoa.employer_verification_versions newer
+                WHERE newer.verification_id=v.verification_id AND newer.version>v.version)
+              AND NOT EXISTS (
+                SELECT 1 FROM (
+                    SELECT DISTINCT ON (actor) actor, action
+                    FROM acoa.company_contact_control_events controls
+                    WHERE controls.organization_id=e.organization_id
+                      AND controls.effective_at <= :now
+                    ORDER BY actor, sequence DESC
+                ) latest WHERE action='block'
+              )
+        )"""),
+        {
+            "recipient": prepared.request.recipient_id,
+            "recipient_class": recipient_class.value,
+            "grant": grant.grant_id,
+            "grant_version": grant.version,
+            "grant_expires_at": grant.expires_at,
+            "organization": application["company_id"],
+            "target": application["target_id"],
+            "now": context.now,
+        },
+    ).scalar_one()
+    return EvidenceStatus.SATISFIED if enrolled else EvidenceStatus.UNKNOWN
 
 
 class ActionProtocol:
@@ -248,7 +350,9 @@ class ActionProtocol:
             budget=budget_usage(
                 self.connection, authority, prepared.attempt_id, dict(evidence), now
             ),
-            evidence=current_evidence_facts(context, authority, prepared, evidence, application),
+            evidence=current_evidence_facts(
+                self.connection, context, authority, prepared, evidence, application
+            ),
         )
 
     def _evaluate(
