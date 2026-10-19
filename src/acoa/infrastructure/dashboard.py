@@ -158,6 +158,8 @@ class DashboardRepository:
             currency_per_month=settings.budget.max_currency_per_month,
             tokens_per_task=settings.budget.max_tokens_per_task,
             seconds_per_task=settings.budget.max_time_per_task,
+            paid_services_enabled=settings.budget.paid_services_enabled,
+            progress_stall_timeout=settings.budget.progress_stall_timeout,
         )
 
     def _applications(self, query: DashboardQuery) -> tuple[DashboardApplication, ...]:

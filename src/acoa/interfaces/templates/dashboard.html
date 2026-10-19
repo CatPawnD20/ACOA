@@ -51,6 +51,8 @@
         <label>Currency / month<input name="currency_per_month" inputmode="decimal" value="{{ snapshot.authority.currency_per_month if snapshot.authority.currency_per_month is not none else '' }}"></label>
         <label>Tokens / task<input name="tokens_per_task" type="number" min="0" value="{{ snapshot.authority.tokens_per_task if snapshot.authority.tokens_per_task is not none else '' }}"></label>
         <label>Seconds / task<input name="seconds_per_task" type="number" min="0" value="{{ snapshot.authority.seconds_per_task if snapshot.authority.seconds_per_task is not none else '' }}"></label>
+        <label>Progress stall / seconds<input name="progress_stall_timeout" type="number" min="0" value="{{ snapshot.authority.progress_stall_timeout if snapshot.authority.progress_stall_timeout is not none else '' }}"></label>
+        <label><input name="paid_services_enabled" type="checkbox"{% if snapshot.authority.paid_services_enabled %} checked{% endif %}> Paid services enabled</label>
         <button type="submit">Save limits</button>
       </form>
       <p id="control-status" class="control-note" aria-live="polite"></p>

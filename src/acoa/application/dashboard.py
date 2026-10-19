@@ -99,6 +99,8 @@ class DashboardAuthority:
     currency_per_month: Decimal | None
     tokens_per_task: int | None
     seconds_per_task: int | None
+    paid_services_enabled: bool = True
+    progress_stall_timeout: int | None = None
 
 
 @dataclass(frozen=True, slots=True)

@@ -86,6 +86,8 @@ class BudgetLimits:
     max_currency_per_month: Decimal | None = None
     max_tokens_per_task: int | None = None
     max_time_per_task: int | None = None
+    paid_services_enabled: bool = True
+    progress_stall_timeout: int | None = None
 
     def __post_init__(self) -> None:
         _currency(self.currency)
@@ -93,6 +95,8 @@ class BudgetLimits:
             object.__setattr__(self, name, _amount(getattr(self, name), f"budget.{name}"))
         _count(self.max_tokens_per_task, "budget.max_tokens_per_task")
         _count(self.max_time_per_task, "budget.max_time_per_task")
+        _boolean(self.paid_services_enabled, "budget.paid_services_enabled")
+        _count(self.progress_stall_timeout, "budget.progress_stall_timeout")
 
 
 @dataclass(frozen=True, slots=True)
@@ -204,6 +208,8 @@ def _parse_budget(data: Mapping[str, object]) -> BudgetLimits:
             "max_currency_per_month",
             "max_tokens_per_task",
             "max_time_per_task",
+            "paid_services_enabled",
+            "progress_stall_timeout",
         ),
     )
     return BudgetLimits(
@@ -218,6 +224,12 @@ def _parse_budget(data: Mapping[str, object]) -> BudgetLimits:
             section.get("max_tokens_per_task"), "budget.max_tokens_per_task"
         ),
         max_time_per_task=_count(section.get("max_time_per_task"), "budget.max_time_per_task"),
+        paid_services_enabled=_boolean(
+            section.get("paid_services_enabled", True), "budget.paid_services_enabled"
+        ),
+        progress_stall_timeout=_count(
+            section.get("progress_stall_timeout"), "budget.progress_stall_timeout"
+        ),
     )
 
 
@@ -320,20 +332,36 @@ def _mode_blockers(settings: Settings) -> tuple[str, ...]:
 
 def _limit_blockers(settings: Settings) -> tuple[str, ...]:
     blockers = []
-    for name, value in (
+    for name, count_value in (
         ("applications.max_per_day", settings.applications.max_per_day),
         ("applications.max_per_week", settings.applications.max_per_week),
         ("outreach.per_company_limit", settings.outreach.per_company_limit),
         ("outreach.per_contact_limit", settings.outreach.per_contact_limit),
-        ("budget.max_currency_per_day", settings.budget.max_currency_per_day),
-        ("budget.max_currency_per_month", settings.budget.max_currency_per_month),
         ("budget.max_tokens_per_task", settings.budget.max_tokens_per_task),
         ("budget.max_time_per_task", settings.budget.max_time_per_task),
     ):
-        if value is None or value == 0:
+        if count_value is None or count_value == 0:
+            blockers.append(name)
+    for name, money_value in (
+        ("budget.max_currency_per_day", settings.budget.max_currency_per_day),
+        ("budget.max_currency_per_month", settings.budget.max_currency_per_month),
+    ):
+        if settings.budget.paid_services_enabled:
+            if money_value is None or money_value == 0:
+                blockers.append(name)
+        elif money_value is None or money_value != 0:
             blockers.append(name)
     if settings.budget.currency is None:
         blockers.append("budget.currency")
+    stall_timeout = settings.budget.progress_stall_timeout
+    if stall_timeout is not None and stall_timeout == 0:
+        blockers.append("budget.progress_stall_timeout")
+    if (
+        stall_timeout is not None
+        and settings.budget.max_time_per_task is not None
+        and stall_timeout > settings.budget.max_time_per_task
+    ):
+        blockers.append("budget.progress_stall_timeout_above_task_limit")
     return tuple(blockers)
 
 

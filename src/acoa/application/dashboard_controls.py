@@ -34,16 +34,20 @@ class DashboardLimitValues:
     currency_per_month: Decimal | None
     tokens_per_task: int | None
     seconds_per_task: int | None
+    paid_services_enabled: bool = True
+    progress_stall_timeout: int | None = None
 
     def __post_init__(self) -> None:
         ApplicationLimits(self.applications_per_day, self.applications_per_week)
         OutreachLimits(self.outreach_per_company, self.outreach_per_contact)
         BudgetLimits(
-            self.currency,
-            self.currency_per_day,
-            self.currency_per_month,
-            self.tokens_per_task,
-            self.seconds_per_task,
+            currency=self.currency,
+            max_currency_per_day=self.currency_per_day,
+            max_currency_per_month=self.currency_per_month,
+            max_tokens_per_task=self.tokens_per_task,
+            max_time_per_task=self.seconds_per_task,
+            paid_services_enabled=self.paid_services_enabled,
+            progress_stall_timeout=self.progress_stall_timeout,
         )
 
 

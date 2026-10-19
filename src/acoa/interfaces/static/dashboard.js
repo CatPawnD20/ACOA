@@ -50,12 +50,13 @@ document.querySelector("#limits-form")?.addEventListener("submit", (event) => {
   const button = form.querySelector('button[type="submit"]');
   const data = new FormData(form);
   const integers = ["applications_per_day", "applications_per_week", "outreach_per_company",
-    "outreach_per_contact", "tokens_per_task", "seconds_per_task"];
+    "outreach_per_contact", "tokens_per_task", "seconds_per_task", "progress_stall_timeout"];
   const decimals = ["currency_per_day", "currency_per_month"];
   const payload = {};
   for (const name of integers) payload[name] = data.get(name) === "" ? null : Number(data.get(name));
   for (const name of decimals) payload[name] = data.get(name) === "" ? null : data.get(name);
   payload.currency = data.get("currency") === "" ? null : data.get("currency").toUpperCase();
+  payload.paid_services_enabled = data.has("paid_services_enabled");
   runWithFeedback(button, () => applyControl("/api/controls/limits", payload));
 });
 

@@ -10,6 +10,9 @@ external_actions_enabled = false
 # Monetary values are decimals; task time caps are in seconds.
 # Currency and all caps must be explicitly configured before readiness can pass.
 [budget]
+# Set false only when both monetary caps are explicitly zero.
+# paid_services_enabled = false
+# progress_stall_timeout = 1200
 
 # Future PostgreSQL grant and exact quota-policy references, not authority created here.
 [authorization]

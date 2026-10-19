@@ -133,14 +133,30 @@ def _limit_blockers(settings: Settings) -> set[str]:
         ("applications.max_per_week", settings.applications.max_per_week),
         ("outreach.per_company_limit", settings.outreach.per_company_limit),
         ("outreach.per_contact_limit", settings.outreach.per_contact_limit),
-        ("budget.max_currency_per_day", settings.budget.max_currency_per_day),
-        ("budget.max_currency_per_month", settings.budget.max_currency_per_month),
         ("budget.max_tokens_per_task", settings.budget.max_tokens_per_task),
         ("budget.max_time_per_task", settings.budget.max_time_per_task),
     )
-    blockers = {name for name, value in values if value is None or value == 0}
+    blockers = {name for name, count_value in values if count_value is None or count_value == 0}
+    for name, money_value in (
+        ("budget.max_currency_per_day", settings.budget.max_currency_per_day),
+        ("budget.max_currency_per_month", settings.budget.max_currency_per_month),
+    ):
+        if settings.budget.paid_services_enabled:
+            if money_value is None or money_value == 0:
+                blockers.add(name)
+        elif money_value is None or money_value != 0:
+            blockers.add(name)
     if settings.budget.currency is None:
         blockers.add("budget.currency")
+    stall_timeout = settings.budget.progress_stall_timeout
+    if stall_timeout is not None and stall_timeout == 0:
+        blockers.add("budget.progress_stall_timeout")
+    if (
+        stall_timeout is not None
+        and settings.budget.max_time_per_task is not None
+        and stall_timeout > settings.budget.max_time_per_task
+    ):
+        blockers.add("budget.progress_stall_timeout_above_task_limit")
     if (
         settings.applications.max_per_day is not None
         and settings.applications.max_per_week is not None

@@ -37,11 +37,13 @@ def _replace_limits(authority: PolicyAuthority, values: DashboardLimitValues) ->
         applications=ApplicationLimits(values.applications_per_day, values.applications_per_week),
         outreach=OutreachLimits(values.outreach_per_company, values.outreach_per_contact),
         budget=BudgetLimits(
-            values.currency,
-            values.currency_per_day,
-            values.currency_per_month,
-            values.tokens_per_task,
-            values.seconds_per_task,
+            currency=values.currency,
+            max_currency_per_day=values.currency_per_day,
+            max_currency_per_month=values.currency_per_month,
+            max_tokens_per_task=values.tokens_per_task,
+            max_time_per_task=values.seconds_per_task,
+            paid_services_enabled=values.paid_services_enabled,
+            progress_stall_timeout=values.progress_stall_timeout,
         ),
     )
     return replace(authority, settings=settings)

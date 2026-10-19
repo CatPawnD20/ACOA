@@ -125,6 +125,8 @@ Authenticated review ingestion and durable profile history remain later work.
 - No credentials, OAuth tokens, personal documents, real `.env` files, or private data are included.
 - No code that accesses real employer websites, sends email or submits applications is included.
 - Until explicitly configured, `dry_run=true` and `external_actions_enabled=false` remain hard requirements.
+- Codex-only execution can disable paid services with explicit zero monetary caps. Its
+  no-progress timeout must be positive and cannot exceed the absolute per-task time cap.
 - The development environment must not inherit production secrets.
 
 ## Directory map
