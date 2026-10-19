@@ -17,6 +17,7 @@ from acoa.domain.mail import (
     MailMessageRef,
     MailSentRecord,
     draft_request_sha256,
+    require_email,
     require_provider_id,
 )
 from acoa.domain.pilot import ControlledMailTarget
@@ -40,6 +41,22 @@ def _provider_text(value: object, name: str) -> str:
     if not isinstance(value, str):
         raise DomainError(f"Gmail returned an invalid {name}.")
     return require_provider_id(value)
+
+
+def _authenticated_account_email(
+    transport: BoundedGmailTransport, *, timeout_seconds: int
+) -> str:
+    profile = transport.request(
+        "GET",
+        "/gmail/v1/users/me/profile",
+        {},
+        None,
+        timeout_seconds=timeout_seconds,
+    )
+    value = profile.get("emailAddress")
+    if not isinstance(value, str):
+        raise DomainError("Gmail returned an invalid authenticated account identity.")
+    return require_email(value.casefold())
 
 
 def pilot_message_id(attempt_id: UUID) -> str:
@@ -84,6 +101,7 @@ def _validate_pilot_binding(
         or draft.recipient_id != target.recipient_id
         or draft.request.account_email != target.sender_email
         or draft.request.recipients != (target.recipient_email,)
+        or target.sender_email.casefold() != target.recipient_email.casefold()
     ):
         raise DomainError("The live pilot does not match its exact initial-mail authorization.")
     if require_current_target and not target.is_current(now):
@@ -119,6 +137,12 @@ class GmailInitialApplicationPilot:
         _validate_pilot_binding(prepared, self.provider_id, self.draft, self.target, now)
         if self._invoked:
             raise DomainError("A Gmail pilot adapter instance cannot dispatch twice.")
+        authenticated_email = _authenticated_account_email(
+            self.transport,
+            timeout_seconds=min(limits.timeout_seconds, 30),
+        )
+        if authenticated_email.casefold() != self.draft.request.account_email.casefold():
+            raise DomainError("The authenticated Gmail account differs from the approved sender.")
         self._invoked = True
         response = self.transport.request(
             "POST",
