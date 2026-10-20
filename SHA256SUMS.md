@@ -255,6 +255,6 @@ c7a1861a0ab7054af69fc75c0a8f082ddefe4cc897e330ffb78a4027b3a3cefc  tasks/EP-10.03
 2025d71135c187169cfa12c2d815aacc010897c2a434c7574bbca00b064f3a9f  tasks/EP-10.04-codex-execution-limits.md
 0561fd8f8f882ecb114f0d0bcbb0f6cd7afa51709d3ebabe273a58fe75b50ccd  tasks/EP-10.05-controlled-live-pilot.md
 651bb6b2b23e98888720853152f6e35f17d0386502142472082bfd5707d17288  tasks/EP-10.05-zero-data-pilot.md
-3db6eec6c80b01e05cec597a9bb4fe2b8891e9b113146319b342802b7b7000e4  tasks/EP-10.06-production-activation.md
+4fed2f685358938033850e3e1d1aa52b96e5d7c589fe9b80839e6f5388d166d6  tasks/EP-10.06-production-activation.md
 5229ff396803f9cf0acd617b881df74908e60c7ebac4a4089bc59a8d16e53752  tests/test_config.py
 32485ef75d6723fb4e72e7ec9342c19f4c9803292d9cafe714b0e4102fd4d68f  tests/test_package_smoke.py
