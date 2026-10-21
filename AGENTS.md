@@ -40,7 +40,8 @@ In case of conflict, prioritize binding L2 user decisions and approved ADRs over
 - Never commit or expose real secrets, `.env` files, OAuth tokens, personal CVs, email contents or private browser data. Never connect real employer targets during automated tests.
 - Side-effecting external actions require deterministic Policy Gate + authorized External Action Executor, with `prepare → reserve → execute once → reconcile`.
 - Never blindly retry an ambiguous submission. Initial applications/first outreach may be automatic only when explicitly authorized; employer replies and follow-up messages are draft-only for the user to send.
-- Do not bypass CAPTCHA, MFA, access controls, privacy policies, budgets or recipient restrictions. Generated temporary code runs only inside restricted sandbox, without privileged secrets or direct submission rights.
+- A visible CAPTCHA may be completed through its intended user interface only after the user gives explicit confirmation at action time. Never disable the challenge, route around it, outsource it, or use a technical bypass.
+- Do not bypass MFA, access controls, privacy policies, budgets or recipient restrictions. Generated temporary code runs only inside restricted sandbox, without privileged secrets or direct submission rights.
 
 ## Scope of first task
 Implement **EP-00.01** only when instructed. Do not implement database connectivity, web automation, Gmail, live LLM integrations, or live application submission as part of bootstrap. Use fake providers in tests.
