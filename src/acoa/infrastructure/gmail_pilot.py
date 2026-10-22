@@ -43,9 +43,7 @@ def _provider_text(value: object, name: str) -> str:
     return require_provider_id(value)
 
 
-def _authenticated_account_email(
-    transport: BoundedGmailTransport, *, timeout_seconds: int
-) -> str:
+def _authenticated_account_email(transport: BoundedGmailTransport, *, timeout_seconds: int) -> str:
     profile = transport.request(
         "GET",
         "/gmail/v1/users/me/profile",

@@ -69,9 +69,7 @@ class ProductionTargetRepository:
         if not isinstance(enrollment, ProductionRecipientEnrollment):
             raise DatabaseBoundaryError("A validated production recipient enrollment is required.")
         _, authority = AuthorityStore(self.connection).lock_current()
-        now = cast(
-            datetime, self.connection.execute(text("SELECT clock_timestamp()")).scalar_one()
-        )
+        now = cast(datetime, self.connection.execute(text("SELECT clock_timestamp()")).scalar_one())
         grant = authority.grant
         if (
             grant is None
@@ -133,8 +131,7 @@ class ProductionTargetRepository:
             or source["channel_purpose"] not in allowed_purposes
             or source["verification_organization_id"] != enrollment.organization_id
             or source["verification_status"] != "verified"
-            or source["verification_content_sha256"]
-            != enrollment.employer_verification_sha256
+            or source["verification_content_sha256"] != enrollment.employer_verification_sha256
         ):
             raise DatabaseBoundaryError("Recipient enrollment evidence is outside approved scope.")
         deadlines = (

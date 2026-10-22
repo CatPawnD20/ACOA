@@ -74,9 +74,7 @@ class PermissionMode(StrEnum):
 
 class RecipientClass(StrEnum):
     VERIFIED_OFFICIAL_APPLICATION_EMAIL = "verified_official_application_email"
-    VERIFIED_PUBLIC_CORPORATE_RECRUITING_CONTACT = (
-        "verified_public_corporate_recruiting_contact"
-    )
+    VERIFIED_PUBLIC_CORPORATE_RECRUITING_CONTACT = "verified_public_corporate_recruiting_contact"
 
 
 def validate_scope(values: tuple[object, ...], item_type: type) -> None:

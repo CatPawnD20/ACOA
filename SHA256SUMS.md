@@ -1,6 +1,6 @@
 # ACOA current active-file integrity manifest
 
-Calculated on 2026-10-22 after public AI-native workflow documentation verification.
+Calculated on 2026-10-22 after public AI-native workflow and Ruff formatting verification.
 Scope: active root, docs, tasks, src, tests, deployment and .github files.
 Excludes archived originals, this manifest, ignored secrets, environments and caches.
 The original workspace baseline remains preserved in archive/legacy-docs/SHA256SUMS.original-workspace.md.
@@ -118,7 +118,7 @@ d2f8906292d15e4b86214c0308fb98f818ab6e6d1334a024905c024eb045cecb  src/acoa/domai
 7744d94e1c2a8e78ea058a7a062f6fe478d23988efa920110156f55fc47db180  src/acoa/domain/applications.py
 cdc9e28fefd9ac56f712e5dede3ba6bea1d804b54dc1415ef314bcf82744d66b  src/acoa/domain/artifact_lifecycle.py
 ad3a970a3780b7a535db27cc754e4919dcc419f7066fd4dc8cf864a529a0c584  src/acoa/domain/artifacts.py
-e071e1df53fe8ccdc1daf13f83f40d6c04aeb57e4d9cb7d3a03407630a805f9c  src/acoa/domain/authorization.py
+7088fa3ea8aad40f2f4ac3721e92cc936a167d65d0b979847fc73488a2929706  src/acoa/domain/authorization.py
 f6579059661841b78d365db469af69dcf4413dbecb488ddef71c95235548a78d  src/acoa/domain/browser.py
 da5090e9a7d176426e6451b170f6e30b071ae66b737caf893d3e538fcfed568a  src/acoa/domain/budgets.py
 6f1fef25c67b8e42df4474aabff3da632df9f5424452bc79059d213965424377  src/acoa/domain/career_accounts.py
@@ -172,7 +172,7 @@ ef3d6a52389ebb0afd6391d2dc806d9f3f36c9d9b5f22d75b67fcbc4857f00a6  src/acoa/infra
 79b33b1405f2915597595b835ae44a7e87825cfddcec4e7e9e471ca4fa0f4060  src/acoa/infrastructure/form_workflow_records.py
 d29ada09bd8cb4b83654be05e77e2212ee968addbd4b5b1880daa6c5e89b9990  src/acoa/infrastructure/generated_tools.py
 ab940f6c8f6cb746aba783c019023ff20e3d7b3a6215dcbdc5c42f1c5ecddd32  src/acoa/infrastructure/gmail.py
-2d57c12abfdf6e5496376932c036fa2e43bc85770a35bc5097fefdfe1a9b2d08  src/acoa/infrastructure/gmail_pilot.py
+01a4eab915c307c4c475a3a3e5bbc929e05a733575a6926d4422de2d5063631a  src/acoa/infrastructure/gmail_pilot.py
 3a5159b6375516471fa0230f2211b46a55cf903d7c661a37da069db7bd193bcf  src/acoa/infrastructure/google_gmail_transport.py
 30e018105cef01ee5e9455112c33d28bcf6d2ce97d9294de297f6b9ad0af556b  src/acoa/infrastructure/incidents.py
 bb8c55c190560682fdf8c5c00d7261d6ad853e25b03a82b0af6e15748a3f30dc  src/acoa/infrastructure/mail_draft_records.py
@@ -184,9 +184,9 @@ af84ebcab8872bc8a6ad060ed134d923d8f347d9212d8bd8abc579c25d458951  src/acoa/infra
 afe2cc69d183edffe566f62553fd2093cfc7900864233bf264b6e2b4dd735e7c  src/acoa/infrastructure/model_permissions.py
 ecc2e8e2c532b4e553f11369a36d9d6b988a1520a960df9395c9da8298c22052  src/acoa/infrastructure/operations.py
 b4124b781b75994c20970a13fc1aa50ae3e9094e3a5c96b9ba7a331d9b5deb1f  src/acoa/infrastructure/policy_authority.py
-4e2ec560d18c14f0630ef0abb035b541fca99db750ecdf946f72716d84c6ddf9  src/acoa/infrastructure/policy_codec.py
+11cef0315f574abc73294ee76ad00fadc36799b0ba7f76d22a2466085bacd640  src/acoa/infrastructure/policy_codec.py
 0148609ff1618e09c0acdd47835e1376d7d28356edecc1c6cc3c8170294480f3  src/acoa/infrastructure/postgres.py
-1d78ded6a328134861dc67afb665e2a8c25083e63f796362c05754643cc46683  src/acoa/infrastructure/production_targets.py
+3b8e76f642d52c670b89ed704127fc417f8b8d24d46f607689119dcb8aa4636b  src/acoa/infrastructure/production_targets.py
 a1bf2eda52c22668d0764bbc05f94e1f9d82299f34d1d6cf06f032a79e6c881d  src/acoa/infrastructure/readiness.py
 cd9237345f3ee442779d0892c82efd5887295669269293325d5eabc195060b18  src/acoa/infrastructure/reconciliation.py
 5c6fcb61d762f0bc9cd7de638123ce2df70276b2d07088f03bd82e4993706cec  src/acoa/infrastructure/research_records.py
