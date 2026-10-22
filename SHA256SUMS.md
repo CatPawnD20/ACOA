@@ -1,6 +1,6 @@
 # ACOA current active-file integrity manifest
 
-Calculated on 2026-10-20 after production discovery-source integration verification.
+Calculated on 2026-10-22 after public AI-native workflow documentation verification.
 Scope: active root, docs, tasks, src, tests, deployment and .github files.
 Excludes archived originals, this manifest, ignored secrets, environments and caches.
 The original workspace baseline remains preserved in archive/legacy-docs/SHA256SUMS.original-workspace.md.
@@ -10,8 +10,8 @@ SHA-256  current relative path
 2eef2ee951af13e5b255ff6159d5bd912ed0d9c1be14911cafeba8370075bf96  .gitattributes
 6e5e560c890c2602f188163137fb29b76489e9656d3fc143bb4b6776d7701ced  .github/workflows/ci.yml
 a92cb454536a48f99afac623a2a882acda04ddd3e585871eb36b01a1cd629e50  .gitignore
-e3b5a21d4f55780aa436f9d23462635dae0ff2a2b77430937d79dc7f0b955f69  AGENTS.md
-3152a7079ec03af39f3616edcee5c8fb914a3f0b57ce57233bdb3e56dfc5d343  README.md
+9462db93461ef7ace3dbfc2d062cbcaeb4e16bd838f7cb159be87184313c614d  AGENTS.md
+fe31438b62bcfe6a08b6011628811aed6beae6cbb05d1d25ed9ca27a65157e6a  README.md
 90b033787c6e1e16e257aafb32d05da251095a14e57b179e96933d2b7eb23441  config.example.toml
 908fb336a731a1ae40776ccee48ce76a239ab46f011080e7c02f3736180e0e42  deployment/.dockerignore
 4f9d008a58a9d7c23275622016fab9ef971d53d0a350bb1d5834706754786c6e  deployment/README.md
@@ -74,7 +74,7 @@ df45ebd5b44da9ffcfe11c97b0fe4fffe260677481c70c0a0f124bdfcb9d969d  docs/L1-capabi
 7af2b0aec9933ec0ccf81cbf818759e0558980251f1fe770027da05e8f38b0fc  docs/L4-implementation-plan.md
 166327eb76b6e60e46f3358e0767d270bb76f4155a8afd774c4b6a99db8e0c6a  docs/README.md
 6cd46f98085099bf7a0b9a3d7aaa1a18800c8283c724bfe0651269fc4eb87a0f  docs/workspace-audit.md
-1760cbaa9181faf297de97c29dd6431e1d48c6a2929b825a40ff0a308afb25d6  pyproject.toml
+812b5814c4f70bc74c95ab17d4839e17e336127aa9a2f422198028f31e7d97a7  pyproject.toml
 aab65353362d0a5ba62427a44ec866a6c86c2de4b552e6a7895099b2f41a771d  src/acoa/__init__.py
 e9d6492f4ae56d69a793767c0de5f7e3c7c8ff8b968d3b7a120bf02a10eff356  src/acoa/application/__init__.py
 2e3d72725729e654331236340153df8ea59f3c55f7d8682c3a23b5c6f1ad9258  src/acoa/application/artifact_backup.py

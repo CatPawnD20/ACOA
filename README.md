@@ -8,6 +8,14 @@ The approved architecture is a modular monolith in one Python repository (ADR-00
 
 The Python package does not start those services. Importing `acoa` or `acoa.config` reads no configuration and starts no network request, database connection, browser, model call, subprocess, or background job. PostgreSQL and migrations are started explicitly. EP-02.01 adds a transaction-scoped task queue adapter; it never starts workers or opens connections on import. The EP-07.01 app factory requires an explicitly injected snapshot loader and opens nothing on import. Replies and follow-up emails remain user-sent under P-01/P-02.
 
+## AI-native application workflow
+
+ACOA is designed to make AI-assisted opportunity research and authorized initial applications reviewable rather than invisible. For employers that explicitly value AI-native work, an application may link to this repository and include a concise disclosure of the actual workflow used.
+
+The disclosure must remain technically accurate. Until a deployed ACOA runtime performs the workflow, use wording such as: `Prepared with Codex using ACOA's controlled application workflow.` Do not claim that ACOA autonomously submitted an application when Codex or a human-operated tool performed the external steps. The applicant remains responsible for factual claims and binding commitments; Policy Gate, explicit authorization, evidence capture and reconciliation remain mandatory.
+
+Public project link: <https://github.com/CatPawnD20/ACOA>
+
 ## Local development
 
 Python 3.12 is the verified baseline; package metadata requires Python >=3.12. Python 3.12.14 was exercised on Windows and in a clean Debian Linux container. Other Python versions and GitHub-hosted runner environments have not been exercised.
@@ -111,7 +119,7 @@ The source documents were preserved, except for **approval status metadata synch
 
 1. Keep the five canonical specifications and AGENTS rules available in the repository. Approved document bytes are preserved by `.gitattributes`; code uses LF line endings.
 2. Work through focused tasks, using small functions, requirements-linked verification, and a final diff review. The user approved [the EP-00.01 plan](tasks/EP-00.01-implementation-plan.md) and local Git preparation on 2026-10-14.
-3. Local Git uses the `main` branch. No remote GitHub repository or push is included. When explicitly requested, create a private remote repository and review focused PRs before merging.
+3. Local Git uses the `main` branch. Publishing the repository does not activate deployment, credentials, production data or employer actions. Review focused changes and preserve the safety defaults before each push.
 4. EP-00.02 implements configuration validation with safe defaults and blocked readiness when required declarations/budgets are missing. EP-00.03 provides dedicated PostgreSQL infrastructure and, through [the migration follow-up](tasks/EP-00.03-migration-runner.md), the G0 runner. Follow [the deployment guide](deployment/README.md) for explicit startup and migration commands. EP-00.04 provides CI checks, including migration tooling and offline checks. Business schema migrations remain EP-02 scope.
 5. Real sending remains disabled until separate explicit activation and release gates. Routine engineering autonomy does not activate external employer actions.
 
